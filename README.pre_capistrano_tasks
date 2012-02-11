@@ -1,0 +1,27 @@
+- Launch Centos image from public AMI at Amazon
+   - for cl_dash this was 6.2
+   - I picked CentOS-6.2-vs (ami-d91dcbb0)
+
+- Install a user 
+   useradd adh -c "Andrew Hollingsworth" -u 11001 -m -s /bin/bash
+   passwd adh 
+
+- Add user to wheel group in /etc/group
+   wheel:x:10:root,adh
+
+- Remove comment for wheel group in sudoers using visudo
+   %wheel  ALL=(ALL)       ALL     
+
+- Add an ssh key in for the user in /home/<user>/.ssh/authorized_keys
+   mkdir -p /home/adh/.ssh 
+   chown adh.adh /home/adh/.ssh
+   chmod 700 /home/adh/.ssh
+   vi /home/adh/.ssh/authorized_keys
+   chmod 600 /home/adh/.ssh/authorized_keys
+   chown adh.adh /home/adh/.ssh/authorized_keys
+
+- Copy in any user preferences into their home directory
+   - tests scp connectivity and user functioanlity
+
+- Login as user using ssh
+

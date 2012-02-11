@@ -60,8 +60,19 @@ namespace :cl_dash do
 
    desc "install Percona MySQL 5.5"
    task :install_percona, :roles => :cldash do
-      #sudo "rpm -Uhv http://www.percona.com/downloads/percona-release/percona-release-0.0-1.x86_64.rpm"
+      sudo "rpm -Uhv http://www.percona.com/downloads/percona-release/percona-release-0.0-1.x86_64.rpm"
       sudo "yum -y -q install Percona-Server-shared-compat.x86_64 Percona-Server-client-55 Percona-Server-server-55" 
+      upload("./etc/my.cnf.cl_dash","/tmp/my.cnf.cl_dash", :mode => 0644)
+      sudo "cp /tmp/my.cnf.cl_dash /etc"
+      sudo "mv -f /etc/my.cnf /etc/my.cnf.orig"
+      sudo "ln -s /etc/my.cnf.cl_dash /etc/my.cnf"
+      sudo "rm -f /tmp/my.cnf.cl_dash"
+      sudo "/etc/init.d/mysql start"
+      sudo "chkconfig mysql on"
+      sudo "mysqladmin -u root password cl_dash2012"
+      upload("./etc/.my.cnf.cl_dash.root","/tmp/.my.cnf.cl_dash.root", :mode => 0600)
+      sudo "cp -pf /tmp/.my.cnf.cl_dash.root /root/.my.cnf" 
+      sudo "rm -f /tmp/.my.cnf.cl_dash.root"
    end
 
    #################################################################

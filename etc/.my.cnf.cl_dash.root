@@ -1,0 +1,15 @@
+[mysqladmin] 
+user            = root
+password        = cl_dash2012
+[mysql] 
+user            = root
+password        = cl_dash2012
+[mysqldump] 
+user            = root
+password        = cl_dash2012
+[mysqlcheck] 
+user            = root
+password        = cl_dash2012
+[mysql_tableinfo] 
+user            = root
+password        = cl_dash2012

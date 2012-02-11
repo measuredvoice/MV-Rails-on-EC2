@@ -13,8 +13,8 @@ max_binlog_size			= 100M
 sync_binlog			= 1
 skip-slave-start
 innodb_file_per_table
-innodb_buffer_pool_size		= 4096M
-innodb_additional_mem_pool_size	= 64M
+innodb_buffer_pool_size		= 32M
+innodb_additional_mem_pool_size	= 32M
 innodb_log_buffer_size		= 16M
 innodb_flush_log_at_trx_commit	= 2
 innodb_lock_wait_timeout	= 50
@@ -28,7 +28,7 @@ tmpdir				= /tmp
 language			= /usr/share/mysql/english
 skip-external-locking
 bind-address			= 0.0.0.0
-key_buffer			= 256M
+key_buffer			= 16M
 max_allowed_packet		= 16M
 thread_stack			= 128K
 thread_cache_size		= 16
@@ -37,12 +37,9 @@ table_open_cache		= 4096
 tmp_table_size			= 536870912 
 max_heap_table_size		= 536870912 
 query_cache_limit		= 10M
-query_cache_size		= 128M
-log_slow_queries		= /var/log/mysql/mysql-slow.log
+query_cache_size		= 16M
+log_slow_queries		= /var/log/mysql-slow.log
 long_query_time			= 1
-ssl-ca				= /etc/mysql/ca.cert
-ssl-cert			= /etc/mysql/wildcard.cert
-ssl-key				= /etc/mysql/wildcard.key
 
 [mysqldump]
 quick

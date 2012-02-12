@@ -159,5 +159,7 @@ namespace :ringsail do
       install_ruby
       update_gem
       install_bundler
+      install_apache
+      install_passenger
    end
 end

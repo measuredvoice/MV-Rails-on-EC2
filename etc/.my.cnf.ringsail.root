@@ -1,0 +1,15 @@
+[mysqladmin] 
+user            = root
+password        = ringsail2012
+[mysql] 
+user            = root
+password        = ringsail2012
+[mysqldump] 
+user            = root
+password        = ringsail2012
+[mysqlcheck] 
+user            = root
+password        = ringsail2012
+[mysql_tableinfo] 
+user            = root
+password        = ringsail2012

@@ -39,7 +39,7 @@ namespace :cl_dash do
 
    desc "common packages"
    task :install_commonpackages, :roles => :cldash  do
-      sudo "yum -y -q install screen nginx git-all"
+      sudo "yum -y -q install screen nginx git-all rpm-build redhat-rpm-config unifdefi readline readline-devel ncurses ncurses-devel gdbm gdbm-devel glibc-devel tcl-devel gcc unzip openssl-devel db4-devel byacc make"
    end
 
    desc "install ruby 1.9.2 (from rpm)"
@@ -89,8 +89,8 @@ namespace :cl_dash do
       upload("./keys/mv_deploy_key.pub","/tmp/mv_deploy_key.pub", :mode => 0600)
       sudo "cp -f /tmp/mv_deploy_key.pub /home/mv/.ssh/authorized_keys"
       run "rm -f /tmp/mv_deploy_key.pub"
-      sudo "chown mv.mv /home/mv/.ssh/authorized_keys"
       sudo "chmod 600 /home/mv/.ssh/authorized_keys"
+      sudo "chown -R mv.mv /home/mv/.ssh"
    end
 
    desc "nginx config install"

@@ -23,5 +23,8 @@
 - Copy in any user preferences into their home directory
    - tests scp connectivity and user functioanlity
 
-- Login as user using ssh
+- Login as user using ssh to check connectivity
+
+- Run cap cl_dash:install HOSTS=hostnameofnewserver or
+  cap ringsail:install HOSTS=hostnameofnewserver
 

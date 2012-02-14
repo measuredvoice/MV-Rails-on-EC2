@@ -75,6 +75,11 @@ namespace :cl_dash do
       sudo "cp -pf /tmp/.my.cnf.cl_dash.root /root/.my.cnf" 
       sudo "rm -f /tmp/.my.cnf.cl_dash.root"
    end
+   
+   desc "create database for cl_dash"
+   task :create_db, :roles => :cldash do
+      sudo "mysql -e 'create database cl_dash'"
+   end
 
    desc "add account to deploy to"
    task :add_role_account, :roles => :cldash do
@@ -114,6 +119,7 @@ namespace :cl_dash do
       install_bundler   
       add_role_account
       install_nginx_config
+      create_db
    end
 end
 
@@ -155,7 +161,6 @@ namespace :ringsail do
       sudo "yum -y -q install Percona-Server-shared-compat.x86_64 Percona-Server-client-55 Percona-Server-server-55" 
       upload("./etc/my.cnf.ringsail","/tmp/my.cnf.ringsail", :mode => 0644)
       sudo "cp /tmp/my.cnf.ringsail /etc"
-      #sudo "mv -f /etc/my.cnf /etc/my.cnf.orig"
       sudo "ln -s /etc/my.cnf.ringsail /etc/my.cnf"
       sudo "rm -f /tmp/my.cnf.ringsail"
       sudo "/etc/init.d/mysql start"

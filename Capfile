@@ -9,8 +9,8 @@
 
 #################################################################
 # Define servers
-server "ec2-50-19-10-251.compute-1.amazonaws.com", :cldash
-server "ec2-174-129-118-37.compute-1.amazonaws.com", :ringsail
+server "ec2-184-72-64-170.compute-1.amazonaws.com", :cldash
+server "ec2-184-73-60-5.compute-1.amazonaws.com", :ringsail
 
 
 #################################################################
@@ -62,7 +62,7 @@ namespace :cl_dash do
    desc "install Percona MySQL 5.5"
    task :install_percona, :roles => :cldash do
       sudo "rpm -Uhv http://www.percona.com/downloads/percona-release/percona-release-0.0-1.x86_64.rpm"
-      sudo "yum -y -q install Percona-Server-shared-compat.x86_64 Percona-Server-client-55 Percona-Server-server-55" 
+      sudo "yum -y -q install Percona-Server-shared-compat.x86_64 Percona-Server-client-55 Percona-Server-server-55 Percona-Server-devel-55.x86_64" 
       upload("./etc/my.cnf.cl_dash","/tmp/my.cnf.cl_dash", :mode => 0644)
       sudo "cp /tmp/my.cnf.cl_dash /etc"
       sudo "mv -f /etc/my.cnf /etc/my.cnf.orig"
@@ -76,6 +76,32 @@ namespace :cl_dash do
       sudo "rm -f /tmp/.my.cnf.cl_dash.root"
    end
 
+   desc "add account to deploy to"
+   task :add_role_account, :roles => :cldash do
+      sudo "useradd mv -c 'Measured Voice Deploy' -u 33001 -m -s /bin/bash"
+      sudo "mkdir -p /home/mv/.ssh"
+      sudo "chmod 700 /home/mv/.ssh"
+      upload("./keys/mv_deploy_key.pub","/tmp/mv_deploy_key.pub", :mode => 0600)
+      sudo "cp -f /tmp/mv_deploy_key.pub /home/mv/.ssh/authorized_keys"
+      run "rm -f /tmp/mv_deploy_key.pub"
+      sudo "chown mv.mv /home/mv/.ssh/authorized_keys"
+      sudo "chmod 600 /home/mv/.ssh/authorized_keys"
+   end
+
+   desc "nginx config install"
+   task :install_nginx_config, :roles => :cldash do
+      system "tar czf /tmp/cl_dash_nginx_config.tgz ./etc/nginx"
+      run "mkdir -p /tmp/cl_dash_nginx_config"
+      upload("/tmp/cl_dash_nginx_config.tgz", "/tmp/cl_dash_nginx_config/cl_dash_nginx_config.tgz", :mode => 0600)
+      run "cd /tmp/cl_dash_nginx_config ; tar xf cl_dash_nginx_config.tgz" 
+      sudo "cp -fr /tmp/cl_dash_nginx_config/etc/nginx/* /etc/nginx/"
+      sudo "mv /etc/nginx/nginx.conf /etc/nginx/nginx.conf.orig"
+      sudo "ln -s /etc/nginx/nginx_cldash.conf /etc/nginx/nginx.conf"
+      run "rm -rf /tmp/cl_dash_nginx_config"
+      system "rm -f /tmp/cl_dash_nginx_config.tgz"
+      sudo "/etc/init.d/nginx restart"
+   end
+
    #################################################################
    # cl_dash install all packages
    desc "all tasks to create a cl_dash server"
@@ -85,7 +111,9 @@ namespace :cl_dash do
       install_percona
       install_ruby
       update_gem
-      install_bundler
+      install_bundler   
+      add_role_account
+      install_nginx_config
    end
 end
 
@@ -149,6 +177,18 @@ namespace :ringsail do
       sudo "passenger-install-apache2-module --auto"
    end
 
+   desc "add account to deploy to"
+   task :add_role_account, :roles => :cldash do
+      sudo "useradd mv -c 'Measured Voice Deploy' -u 33001 -m -s /bin/bash"
+      sudo "mkdir -p /home/mv/.ssh"
+      sudo "chmod 700 /home/mv/.ssh"
+      upload("./keys/mv_deploy_key.pub","/tmp/mv_deploy_key.pub", :mode => 0600)
+      sudo "cp -f /tmp/mv_deploy_key.pub /home/mv/.ssh/authorized_keys"
+      run "rm -f /tmp/mv_deploy_key.pub"
+      sudo "chown mv.mv /home/mv/.ssh/authorized_keys"
+      sudo "chmod 600 /home/mv/.ssh/authorized_keys"
+   end
+
    #################################################################
    # ringsail install all packages
    desc "all tasks to create a ringsail server"
@@ -161,5 +201,6 @@ namespace :ringsail do
       install_bundler
       install_apache
       install_passenger
+      add_role_account
    end
 end

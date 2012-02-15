@@ -107,6 +107,13 @@ namespace :cl_dash do
       sudo "/etc/init.d/nginx restart"
    end
 
+   desc "install Node.js"
+   task :install_nodejs, :roles => :cldash do
+      run "cd /tmp ; wget http://nodejs.tchol.org/repocfg/el/nodejs-stable-release.noarch.rpm"
+      sudo "yum -y -q localinstall --nogpgcheck /tmp/nodejs-stable-release.noarch.rpm"
+      sudo "yum -y -q install nodejs"
+   end
+
    #################################################################
    # cl_dash install all packages
    desc "all tasks to create a cl_dash server"
@@ -118,6 +125,7 @@ namespace :cl_dash do
       update_gem
       install_bundler   
       add_role_account
+      install_nodejs
       install_nginx_config
       create_db
    end
@@ -200,6 +208,13 @@ namespace :ringsail do
       sudo "chown -R mv.mv /home/mv/.ssh"
    end
 
+   desc "install Node.js"
+   task :install_nodejs, :roles => :ringsail do
+      run "cd /tmp ; wget http://nodejs.tchol.org/repocfg/el/nodejs-stable-release.noarch.rpm"
+      sudo "yum -y -q localinstall --nogpgcheck /tmp/nodejs-stable-release.noarch.rpm"
+      sudo "yum -y -q install nodejs"
+   end
+
    #################################################################
    # ringsail install all packages
    desc "all tasks to create a ringsail server"
@@ -212,6 +227,7 @@ namespace :ringsail do
       install_bundler
       install_apache
       install_passenger
+      #install_nodejs
       create_db
       add_role_account
    end

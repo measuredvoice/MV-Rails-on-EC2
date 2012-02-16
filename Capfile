@@ -138,12 +138,12 @@ namespace :ringsail do
 
    desc "install epel repo"
    task :install_epelrepo, :roles => :ringsail do
-      sudo "rpm -Uvh http://download.fedora.redhat.com/pub/epel/5/x86_64/epel-release-5.4.noarch.rpm"
+      sudo "rpm -Uvh http://download.fedora.redhat.com/pub/epel/5/x86_64/epel-release-5-4.noarch.rpm"
    end
 
    desc "common packages"
    task :install_commonpackages, :roles => :ringsail  do
-      sudo "yum -y -q install screen nginx git-all rpm-build redhat-rpm-config unifdefi readline readline-devel ncurses ncurses-devel gdbm gdbm-devel glibc-devel tcl-devel gcc unzip openssl-devel db4-devel byacc make"
+      sudo "yum -y -q install screen nginx git-all rpm-build redhat-rpm-config unifdefi readline readline-devel ncurses ncurses-devel gdbm gdbm-devel glibc-devel tcl-devel gcc unzip openssl-devel db4-devel byacc make gcc-c++ curl-devel zlib-devel"
    end
 
    desc "install ruby 1.9.2 (from rpm)"
@@ -167,27 +167,26 @@ namespace :ringsail do
    task :install_percona, :roles => :ringsail do
       sudo "rpm -Uhv http://www.percona.com/downloads/percona-release/percona-release-0.0-1.x86_64.rpm"
       sudo "yum -y -q install Percona-Server-shared-compat.x86_64 Percona-Server-client-55 Percona-Server-server-55 Percona-Server-devel-55.x86_64" 
-      upload("./etc/my.cnf.cl_dash","/tmp/my.cnf.cl_dash", :mode => 0644)
-      sudo "cp /tmp/my.cnf.cl_dash /etc"
-      sudo "mv -f /etc/my.cnf /etc/my.cnf.orig"
-      sudo "ln -s /etc/my.cnf.cl_dash /etc/my.cnf"
-      sudo "rm -f /tmp/my.cnf.cl_dash"
+      upload("./etc/my.cnf.ringsail","/tmp/my.cnf.ringsail", :mode => 0644)
+      sudo "cp /tmp/my.cnf.ringsail /etc"
+      sudo "ln -s /etc/my.cnf.ringsail /etc/my.cnf"
+      sudo "rm -f /tmp/my.cnf.ringsail"
       sudo "/etc/init.d/mysql start"
-      sudo "chkconfig mysql on"
+      sudo "/sbin/chkconfig mysql on"
       sudo "mysqladmin -u root password ringsail2012"
-      upload("./etc/.my.cnf.cl_dash.root","/tmp/.my.cnf.cl_dash.root", :mode => 0600)
-      sudo "cp -pf /tmp/.my.cnf.cl_dash.root /root/.my.cnf" 
-      sudo "rm -f /tmp/.my.cnf.cl_dash.root"
+      upload("./etc/.my.cnf.ringsail.root","/tmp/.my.cnf.ringsail.root", :mode => 0600)
+      sudo "cp -pf /tmp/.my.cnf.ringsail.root /root/.my.cnf" 
+      sudo "rm -f /tmp/.my.cnf.ringsail.root"
    end
 
    desc "create database for ringsail"
    task :create_db, :roles => :ringsail do
-      sudo "mysql -e 'create database ringsail'"
+      sudo "sudo -i mysqladmin create ringsail"
    end
 
    desc "install latest Apache"
    task :install_apache, :roles => :ringsail do
-      sudo "yum -y install httpd"
+      sudo "yum -y install httpd httpd-devel apr-devel apr-util-devel"
    end
 
    desc "install Phusion Passenger"
@@ -198,7 +197,7 @@ namespace :ringsail do
 
    desc "add account to deploy to"
    task :add_role_account, :roles => :ringsail do
-      sudo "useradd mv -c 'Measured Voice Deploy' -u 33001 -m -s /bin/bash"
+      sudo "/usr/sbin/useradd mv -c 'Measured Voice Deploy' -u 33001 -m -s /bin/bash"
       sudo "mkdir -p /home/mv/.ssh"
       sudo "chmod 700 /home/mv/.ssh"
       upload("./keys/mv_deploy_key.pub","/tmp/mv_deploy_key.pub", :mode => 0600)
@@ -219,16 +218,16 @@ namespace :ringsail do
    # ringsail install all packages
    desc "all tasks to create a ringsail server"
    task :install, :roles => :ringsail  do
-      install_epelrepo 
-      install_commonpackages 
-      install_percona
-      install_ruby
-      update_gem
-      install_bundler
-      install_apache
-      install_passenger
+      #install_epelrepo 
+      #install_commonpackages 
+      #install_percona
+      #install_ruby
+      #update_gem
+      #install_bundler
+      #install_apache
+      #install_passenger
       #install_nodejs
-      create_db
+      #create_db
       add_role_account
    end
 end

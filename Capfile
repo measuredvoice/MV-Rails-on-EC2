@@ -176,12 +176,14 @@ namespace :ringsail do
       sudo "mysqladmin -u root password ringsail2012"
       upload("./etc/.my.cnf.ringsail.root","/tmp/.my.cnf.ringsail.root", :mode => 0600)
       sudo "cp -pf /tmp/.my.cnf.ringsail.root /root/.my.cnf" 
+      sudo "cp -pf /tmp/.my.cnf.ringsail.root /home/mv/.my.cnf" 
+      sudo "chown mv.mv /home/mv/.my.cnf"
       sudo "rm -f /tmp/.my.cnf.ringsail.root"
    end
 
    desc "create database for ringsail"
    task :create_db, :roles => :ringsail do
-      sudo "sudo -i mysqladmin create ringsail"
+      sudo "sudo -i mysqladmin create ringsail_production"
    end
 
    desc "install latest Apache"
@@ -214,20 +216,29 @@ namespace :ringsail do
       sudo "yum -y -q install nodejs"
    end
 
+   desc "apache config install"
+   task :install_apache_config, :roles => :ringsail do
+      upload("./etc/httpd/conf.d/ringsail.conf", "/tmp/ringsail.conf", :mode => 0600)
+      sudo "cp -f /tmp/ringsail.conf /etc/httpd/conf.d"
+      system "rm -f /tmp/ringsail.conf"
+      sudo "/etc/init.d/httpd restart"
+   end
+
    #################################################################
    # ringsail install all packages
    desc "all tasks to create a ringsail server"
    task :install, :roles => :ringsail  do
-      #install_epelrepo 
-      #install_commonpackages 
-      #install_percona
-      #install_ruby
-      #update_gem
-      #install_bundler
-      #install_apache
-      #install_passenger
-      #install_nodejs
-      #create_db
+      install_epelrepo 
+      install_commonpackages 
       add_role_account
+      install_percona
+      install_ruby
+      update_gem
+      install_bundler
+      install_apache
+      install_passenger
+      install_nodejs
+      install_apache_config
+      create_db
    end
 end

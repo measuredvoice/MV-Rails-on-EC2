@@ -218,9 +218,11 @@ namespace :ringsail do
 
    desc "apache config install"
    task :install_apache_config, :roles => :ringsail do
-      upload("./etc/httpd/conf.d/ringsail.conf", "/tmp/ringsail.conf", :mode => 0600)
+      upload("./etc/httpd/conf.d/ringsail.conf", "/tmp/ringsail.conf", :mode => 0644)
+      upload("./etc/httpd/conf/httpd.conf", "/tmp/httpd.conf", :mode => 0644)
       sudo "cp -f /tmp/ringsail.conf /etc/httpd/conf.d"
-      system "rm -f /tmp/ringsail.conf"
+      sudo "cp -f /tmp/httpd.conf /etc/httpd/conf"
+      system "rm -f /tmp/ringsail.conf /tmp/httpd.conf"
       sudo "/etc/init.d/httpd restart"
    end
 

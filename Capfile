@@ -10,7 +10,7 @@
 #################################################################
 # Define servers
 server "ec2-184-72-64-170.compute-1.amazonaws.com", :cldash
-server "ec2-184-73-60-5.compute-1.amazonaws.com", :ringsail
+server "ec2-67-202-42-163.compute-1.amazonaws.com", :ringsail
 
 
 #################################################################
@@ -34,7 +34,7 @@ namespace :cl_dash do
 
    desc "install epel repo"
    task :install_epelrepo, :roles => :cldash do
-      sudo "rpm -Uvh http://download.fedora.redhat.com/pub/epel/6/x86_64/epel-release-6-5.noarch.rpm"
+      sudo "rpm -Uvh http://download.fedoraproject.org/pub/epel/6/i386/epel-release-6-5.noarch.rpm"
    end
 
    desc "common packages"
@@ -138,7 +138,7 @@ namespace :ringsail do
 
    desc "install epel repo"
    task :install_epelrepo, :roles => :ringsail do
-      sudo "rpm -Uvh http://download.fedora.redhat.com/pub/epel/5/x86_64/epel-release-5-4.noarch.rpm"
+      sudo "rpm -Uvh http://dl.fedoraproject.org/pub/epel/5/i386/epel-release-5-4.noarch.rpm"
    end
 
    desc "common packages"

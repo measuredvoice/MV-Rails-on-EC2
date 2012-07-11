@@ -1,0 +1,15 @@
+[mysqladmin] 
+user            = root
+password        = mv2app2012
+[mysql] 
+user            = root
+password        = mv2app2012
+[mysqldump] 
+user            = root
+password        = mv2app2012
+[mysqlcheck] 
+user            = root
+password        = mv2app2012
+[mysql_tableinfo] 
+user            = root
+password        = mv2app2012

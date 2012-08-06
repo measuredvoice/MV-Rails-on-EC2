@@ -40,7 +40,7 @@ namespace :cl_dash do
 
    desc "common packages"
    task :install_commonpackages, :roles => :cldash  do
-      sudo "yum -y -q install screen nginx git-all rpm-build redhat-rpm-config unifdefi readline readline-devel ncurses ncurses-devel gdbm gdbm-devel glibc-devel tcl-devel gcc unzip openssl-devel db4-devel byacc make"
+      sudo "yum -y -q install screen nginx git-all rpm-build redhat-rpm-config unifdefi readline readline-devel ncurses ncurses-devel gdbm gdbm-devel glibc-devel tcl-devel gcc unzip openssl-devel db4-devel byacc make gcc-c++"
    end
 
    desc "install ruby 1.9.2 (from rpm)"
@@ -132,6 +132,203 @@ namespace :cl_dash do
    end
 end
 
+namespace :mvserver do
+   default_run_options[:pty] = true
+
+   desc "install epel repo"
+   task :install_epelrepo, :roles => :mvserver do
+      sudo "rpm -Uvh http://download.fedoraproject.org/pub/epel/6/i386/epel-release-6-7.noarch.rpml ; true"
+   end
+
+   desc "update all rpms"
+   task :yum_update, :roles => :mvserver do
+      sudo "yum -y -q update"
+   end
+
+   desc "common packages"
+   task :install_commonpackages, :roles => :mvserver  do
+      sudo "yum -y -q install screen git-all rpm-build redhat-rpm-config unifdefi readline readline-devel ncurses ncurses-devel gdbm gdbm-devel glibc-devel tcl-devel gcc unzip openssl-devel db4-devel byacc make iImageMagick.x86_64 libxml2-devel.x86_64 libxslt-devel.x86_64 memcached gcc-c++.x86_64"
+   end
+
+   desc "nginx"
+   task :install_nginx, :roles => :mvserver  do
+      upload("./etc/yum.repos.d/nginx.repo","/tmp/nginx.repo", :mode => 0644)
+      sudo "mv -f /tmp/nginx.repo /etc/yum.repos.d"
+      sudo "yum -y -q install nginx"
+   end
+
+   desc "install ruby 1.9.2 (from rpm)"
+   task :install_ruby, :roles => :mvserver  do
+      upload("./rpms/el6/x86_64/ruby-1.9.2p290-3.el6.x86_64.rpm","/tmp/ruby-1.9.2p290-3.el6.x86_64.rpm", :mode => 0600)
+      sudo "yum -y -q  localinstall /tmp/ruby-1.9.2p290-3.el6.x86_64.rpm"
+      sudo "rm -f /tmp/ruby-1.9.2p290-3.el6.x86_64.rpm" 
+   end
+
+   desc "update gem >= 1.8"
+   task :update_gem, :roles => :mvserver  do
+      sudo "gem update --system"
+   end
+
+   desc "install bundler"
+   task :install_bundler, :roles => :mvserver  do
+      sudo "gem install bundler"
+   end
+
+   desc "install Percona MySQL 5.5 Client"
+   task :install_percona, :roles => :mvserver do
+      sudo "rpm -Uhv http://www.percona.com/downloads/percona-release/percona-release-0.0-1.x86_64.rpm; true"
+      sudo "yum -y -q install Percona-Server-shared-compat.x86_64 Percona-Server-client-55 Percona-Server-devel-55.x86_64" 
+   end
+   
+   desc "add account to deploy to"
+   task :add_role_account, :roles => :mvserver do
+      sudo "useradd mv -c 'Measured Voice Deploy' -u 33001 -m -s /bin/bash"
+      sudo "mkdir -p /home/mv/.ssh"
+      sudo "chmod 700 /home/mv/.ssh"
+      upload("./keys/mv_deploy_key.pub","/tmp/mv_deploy_key.pub", :mode => 0600)
+      sudo "cp -f /tmp/mv_deploy_key.pub /home/mv/.ssh/authorized_keys"
+      run "rm -f /tmp/mv_deploy_key.pub"
+      sudo "chmod 600 /home/mv/.ssh/authorized_keys"
+      sudo "chown -R mv.mv /home/mv/.ssh"
+   end
+
+   desc "nginx config install"
+   task :install_nginx_config, :roles => :mvserver do
+      system "tar czf /tmp/cl_dash_nginx_config.tgz ./etc/nginx"
+      run "mkdir -p /tmp/cl_dash_nginx_config"
+      upload("/tmp/cl_dash_nginx_config.tgz", "/tmp/cl_dash_nginx_config/cl_dash_nginx_config.tgz", :mode => 0600)
+      run "cd /tmp/cl_dash_nginx_config ; tar xf cl_dash_nginx_config.tgz" 
+      sudo "cp -fr /tmp/cl_dash_nginx_config/etc/nginx/* /etc/nginx/"
+      sudo "mv /etc/nginx/nginx.conf /etc/nginx/nginx.conf.orig"
+      sudo "ln -s /etc/nginx/nginx_cldash.conf /etc/nginx/nginx.conf"
+      run "rm -rf /tmp/cl_dash_nginx_config"
+      system "rm -f /tmp/cl_dash_nginx_config.tgz"
+      sudo "/etc/init.d/nginx restart"
+   end
+
+   desc "install Node.js"
+   task :install_nodejs, :roles => :mvserver do
+      run "cd /tmp ; wget http://nodejs.tchol.org/repocfg/el/nodejs-stable-release.noarch.rpm"
+      sudo "yum -y -q localinstall --nogpgcheck /tmp/nodejs-stable-release.noarch.rpm"
+      sudo "yum -y -q install nodejs"
+   end
+
+   #################################################################
+   # mv dev install all packages
+   desc "all tasks to create a mv dev server"
+   task :install, :roles => :mvserver  do
+      install_epelrepo 
+      yum_update
+      install_commonpackages 
+      install_nginx
+      install_percona
+      install_ruby
+      update_gem
+      install_bundler   
+      add_role_account
+      install_nodejs
+      install_nginx_config
+   end
+end
+
+namespace :threepdev do
+   default_run_options[:pty] = true
+
+   desc "install epel repo"
+   task :install_epelrepo, :roles => :threepdev do
+      sudo "rpm -Uvh http://download.fedoraproject.org/pub/epel/6/i386/epel-release-6-7.noarch.rpml ; true"
+   end
+
+   desc "update all rpms"
+   task :yum_update, :roles => :threepdev do
+      sudo "yum -y -q update"
+   end
+
+   desc "common packages"
+   task :install_commonpackages, :roles => :threepdev  do
+      sudo "yum -y -q install screen git-all rpm-build redhat-rpm-config unifdefi readline readline-devel ncurses ncurses-devel gdbm gdbm-devel glibc-devel tcl-devel gcc unzip openssl-devel db4-devel byacc make iImageMagick.x86_64 libxml2-devel.x86_64 libxslt-devel.x86_64 memcached gcc-c++.x86_64"
+   end
+
+   desc "nginx"
+   task :install_nginx, :roles => :threepdev  do
+      upload("./etc/yum.repos.d/nginx.repo","/tmp/nginx.repo", :mode => 0644)
+      sudo "mv -f /tmp/nginx.repo /etc/yum.repos.d"
+      sudo "yum -y -q install nginx"
+   end
+
+   desc "install ruby 1.9.2 (from rpm)"
+   task :install_ruby, :roles => :threepdev  do
+      upload("./rpms/el6/x86_64/ruby-1.9.2p290-3.el6.x86_64.rpm","/tmp/ruby-1.9.2p290-3.el6.x86_64.rpm", :mode => 0600)
+      sudo "yum -y -q  localinstall /tmp/ruby-1.9.2p290-3.el6.x86_64.rpm"
+      sudo "rm -f /tmp/ruby-1.9.2p290-3.el6.x86_64.rpm" 
+   end
+
+   desc "update gem >= 1.8"
+   task :update_gem, :roles => :threepdev  do
+      sudo "gem update --system"
+   end
+
+   desc "install bundler"
+   task :install_bundler, :roles => :threepdev  do
+      sudo "gem install bundler"
+   end
+
+   desc "install Percona MySQL 5.5 Client"
+   task :install_percona, :roles => :threepdev do
+      sudo "rpm -Uhv http://www.percona.com/downloads/percona-release/percona-release-0.0-1.x86_64.rpm; true"
+      sudo "yum -y -q install Percona-Server-shared-compat.x86_64 Percona-Server-client-55 Percona-Server-devel-55.x86_64" 
+   end
+   
+   desc "add account to deploy to"
+   task :add_role_account, :roles => :threepdev do
+      sudo "useradd mv -c 'Measured Voice Deploy' -u 33001 -m -s /bin/bash"
+      sudo "mkdir -p /home/mv/.ssh"
+      sudo "chmod 700 /home/mv/.ssh"
+      upload("./keys/mv_deploy_key.pub","/tmp/mv_deploy_key.pub", :mode => 0600)
+      sudo "cp -f /tmp/mv_deploy_key.pub /home/mv/.ssh/authorized_keys"
+      run "rm -f /tmp/mv_deploy_key.pub"
+      sudo "chmod 600 /home/mv/.ssh/authorized_keys"
+      sudo "chown -R mv.mv /home/mv/.ssh"
+   end
+
+   desc "nginx config install"
+   task :install_nginx_config, :roles => :threepdev do
+      system "tar czf /tmp/cl_dash_nginx_config.tgz ./etc/nginx"
+      run "mkdir -p /tmp/cl_dash_nginx_config"
+      upload("/tmp/cl_dash_nginx_config.tgz", "/tmp/cl_dash_nginx_config/cl_dash_nginx_config.tgz", :mode => 0600)
+      run "cd /tmp/cl_dash_nginx_config ; tar xf cl_dash_nginx_config.tgz" 
+      sudo "cp -fr /tmp/cl_dash_nginx_config/etc/nginx/* /etc/nginx/"
+      sudo "mv /etc/nginx/nginx.conf /etc/nginx/nginx.conf.orig"
+      sudo "ln -s /etc/nginx/nginx_cldash.conf /etc/nginx/nginx.conf"
+      run "rm -rf /tmp/cl_dash_nginx_config"
+      system "rm -f /tmp/cl_dash_nginx_config.tgz"
+      sudo "/etc/init.d/nginx restart"
+   end
+
+   desc "install Node.js"
+   task :install_nodejs, :roles => :threepdev do
+      run "cd /tmp ; wget http://nodejs.tchol.org/repocfg/el/nodejs-stable-release.noarch.rpm"
+      sudo "yum -y -q localinstall --nogpgcheck /tmp/nodejs-stable-release.noarch.rpm"
+      sudo "yum -y -q install nodejs"
+   end
+
+   #################################################################
+   # mv dev install all packages
+   desc "all tasks to create a mv dev server"
+   task :install, :roles => :threepdev  do
+      install_epelrepo 
+      yum_update
+      install_commonpackages 
+      install_nginx
+      install_percona
+      install_ruby
+      update_gem
+      install_bundler   
+      add_role_account
+      install_nodejs
+      install_nginx_config
+   end
+end
 
 # ringsail server
 namespace :ringsail do

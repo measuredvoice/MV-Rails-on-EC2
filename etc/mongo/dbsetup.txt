@@ -1,0 +1,6 @@
+use admin
+db.addUser('admin', 'n@nny0gg')
+db.auth('admin', 'n@nny0gg')
+use graylog2
+db.addUser('grayloguser', 'weatherwax')
+

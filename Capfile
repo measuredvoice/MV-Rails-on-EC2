@@ -35,7 +35,7 @@ namespace :cl_dash do
 
    desc "install epel repo"
    task :install_epelrepo, :roles => :cldash do
-      sudo "rpm -Uvh http://download.fedoraproject.org/pub/epel/6/i386/epel-release-6-5.noarch.rpm"
+      sudo "rpm -Uvh http://download.fedoraproject.org/pub/epel/6/i386/epel-release-6-7.noarch.rpm"
    end
 
    desc "common packages"
@@ -137,7 +137,7 @@ namespace :mvserver do
 
    desc "install epel repo"
    task :install_epelrepo, :roles => :mvserver do
-      sudo "rpm -Uvh http://download.fedoraproject.org/pub/epel/6/i386/epel-release-6-7.noarch.rpml ; true"
+      sudo "rpm -Uvh http://download.fedoraproject.org/pub/epel/6/i386/epel-release-6-7.noarch.rpm ; true"
    end
 
    desc "update all rpms"
@@ -236,7 +236,7 @@ namespace :threepserver do
 
    desc "install epel repo"
    task :install_epelrepo, :roles => :threepserver do
-      sudo "rpm -Uvh http://download.fedoraproject.org/pub/epel/6/i386/epel-release-6-7.noarch.rpml ; true"
+      sudo "rpm -Uvh http://download.fedoraproject.org/pub/epel/6/i386/epel-release-6-7.noarch.rpm ; true"
    end
 
    desc "update all rpms"
@@ -448,7 +448,7 @@ namespace :mv2app do
 
    desc "install epel repo"
    task :install_epelrepo, :roles => :mv2app do
-      sudo "rpm -Uvh http://dl.fedoraproject.org/pub/epel/6/i386/epel-release-6-6.noarch.rpm"
+      sudo "rpm -Uvh http://dl.fedoraproject.org/pub/epel/6/i386/epel-release-6-7.noarch.rpm"
    end
 
    desc "common packages"
@@ -544,3 +544,114 @@ namespace :mv2app do
       create_db
    end
 end
+
+
+namespace :mvsyslog do
+   default_run_options[:pty] = true
+
+   desc "install epel repo"
+   task :install_epelrepo, :roles => :mvsyslog do
+      sudo "rpm -Uvh http://download.fedoraproject.org/pub/epel/6/i386/epel-release-6-7.noarch.rpm ; true"
+   end
+
+   desc "update all rpms"
+   task :yum_update, :roles => :mvsyslog do
+      sudo "yum -y -q update"
+   end
+
+   desc "common packages"
+   task :install_commonpackages, :roles => :mvsyslog  do
+      sudo "yum -y -q install screen git-all rpm-build redhat-rpm-config unifdefi readline readline-devel ncurses ncurses-devel gdbm gdbm-devel glibc-devel tcl-devel gcc unzip openssl-devel db4-devel byacc make iImageMagick.x86_64 libxml2-devel.x86_64 libxslt-devel.x86_64 memcached gcc-c++.x86_64"
+   end
+
+   desc "nginx"
+   task :install_nginx, :roles => :mvsyslog  do
+      upload("./etc/yum.repos.d/nginx.repo","/tmp/nginx.repo", :mode => 0644)
+      sudo "mv -f /tmp/nginx.repo /etc/yum.repos.d"
+      sudo "yum -y -q install nginx"
+   end
+
+   desc "mongodb"
+   task :install_mongodb, :roles => :mvsyslog  do
+      sudo "yum -y -q install mongodb mongodb-server"
+      sudo "mkdir -p /var/lib/mongodb"
+      sudo "chown -R mongodb:mongodb /var/lib/mongodb/"
+      sudo "chkconfig mongod on"
+      sudo "service mongod start"
+      upload("./etc/mongo/dbsetup.txt","/tmp/dbsetup.txt", :mode => 0600)
+      sudo "mongo < /tmp/dbsetup.txt"
+   end
+
+   desc "install ruby 1.9.2 (from rpm)"
+   task :install_ruby, :roles => :mvsyslog  do
+      upload("./rpms/el6/x86_64/ruby-1.9.2p290-3.el6.x86_64.rpm","/tmp/ruby-1.9.2p290-3.el6.x86_64.rpm", :mode => 0600)
+      sudo "yum -y -q  localinstall /tmp/ruby-1.9.2p290-3.el6.x86_64.rpm"
+      sudo "rm -f /tmp/ruby-1.9.2p290-3.el6.x86_64.rpm" 
+   end
+
+   desc "update gem >= 1.8"
+   task :update_gem, :roles => :mvsyslog  do
+      sudo "gem update --system"
+   end
+
+   desc "install bundler"
+   task :install_bundler, :roles => :mvsyslog  do
+      sudo "gem install bundler"
+   end
+
+   desc "install Percona MySQL 5.5 Client"
+   task :install_percona, :roles => :mvsyslog do
+      sudo "rpm -Uhv http://www.percona.com/downloads/percona-release/percona-release-0.0-1.x86_64.rpm; true"
+      sudo "yum -y -q install Percona-Server-shared-compat.x86_64 Percona-Server-client-55 Percona-Server-devel-55.x86_64" 
+   end
+   
+   desc "add account to deploy to"
+   task :add_role_account, :roles => :mvsyslog do
+      sudo "useradd mv -c 'Measured Voice Deploy' -u 33001 -m -s /bin/bash"
+      sudo "mkdir -p /home/mv/.ssh"
+      sudo "chmod 700 /home/mv/.ssh"
+      upload("./keys/mv_deploy_key.pub","/tmp/mv_deploy_key.pub", :mode => 0600)
+      sudo "cp -f /tmp/mv_deploy_key.pub /home/mv/.ssh/authorized_keys"
+      run "rm -f /tmp/mv_deploy_key.pub"
+      sudo "chmod 600 /home/mv/.ssh/authorized_keys"
+      sudo "chown -R mv.mv /home/mv/.ssh"
+   end
+
+   desc "nginx config install"
+   task :install_nginx_config, :roles => :mvsyslog do
+      system "tar czf /tmp/cl_dash_nginx_config.tgz ./etc/nginx"
+      run "mkdir -p /tmp/cl_dash_nginx_config"
+      upload("/tmp/cl_dash_nginx_config.tgz", "/tmp/cl_dash_nginx_config/cl_dash_nginx_config.tgz", :mode => 0600)
+      run "cd /tmp/cl_dash_nginx_config ; tar xf cl_dash_nginx_config.tgz" 
+      sudo "cp -fr /tmp/cl_dash_nginx_config/etc/nginx/* /etc/nginx/"
+      sudo "mv /etc/nginx/nginx.conf /etc/nginx/nginx.conf.orig"
+      sudo "ln -s /etc/nginx/nginx_mv2app.conf /etc/nginx/nginx.conf"
+      run "rm -rf /tmp/cl_dash_nginx_config"
+      system "rm -f /tmp/cl_dash_nginx_config.tgz"
+      sudo "/etc/init.d/nginx restart"
+   end
+
+   desc "install Node.js"
+   task :install_nodejs, :roles => :mvsyslog do
+      run "cd /tmp ; wget http://nodejs.tchol.org/repocfg/el/nodejs-stable-release.noarch.rpm"
+      sudo "yum -y -q localinstall --nogpgcheck /tmp/nodejs-stable-release.noarch.rpm"
+      sudo "yum -y -q install nodejs"
+   end
+
+   #################################################################
+   # mv syslog install all packages
+   desc "all tasks to create a mv syslog server with graylog2"
+   task :install, :roles => :mvsyslog  do
+      install_epelrepo 
+      yum_update
+      install_commonpackages 
+      install_mongodb
+      #install_nginx
+      #install_ruby
+      #update_gem
+      #install_bundler   
+      #add_role_account
+      #install_nginx_config
+   end
+end
+

@@ -1,0 +1,5 @@
+# log compression
+1 0 * * *       root    /usr/local/bin/compress_logs >/dev/null 2>&1
+
+# maintain links to logs
+*/10 * * * *    root    /usr/local/bin/maintain_links >/dev/null 2>&1

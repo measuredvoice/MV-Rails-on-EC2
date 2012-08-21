@@ -1,0 +1,32 @@
+#!/bin/sh
+
+###############################################################################
+# compress_logs - adh 20120514
+#   compress logs older than $mtime days old
+#   should be run once per day any time after midnight (as close to 0001 as 
+#   possible)
+###############################################################################
+
+###############################################################################
+# Variables
+LOGROOT="/logs/remote"
+mtime=1
+###############################################################################
+
+###############################################################################
+# Main
+###############################################################################
+
+# find all files that are not compressed under $LOGROOT and compress them
+find $LOGROOT -type f -mtime +$mtime | egrep -v "*.gz" | xargs gzip 2>/dev/null
+
+# hack to maintain links for logs that not changed recently
+# - decompress those logs again. should be very few of these
+# and doing it this way still allows for xargs in the original
+# find above without really complicated regex.
+find /logs/remote -type l | xargs ls -l | grep -v $DATE | cut -d'>' -f2 | xargs gunzip
+
+exit 0 
+###############################################################################
+# The End
+###############################################################################

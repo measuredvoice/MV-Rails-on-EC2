@@ -206,6 +206,17 @@ namespace :mvserver do
       sudo "/etc/init.d/nginx restart"
    end
 
+   desc "nginx config update"
+   task :update_nginx_config, :roles => :mvserver do
+      upload("./etc/nginx/nginx_mv2app.conf","/tmp/nginx_mv2app.conf", :mode => 0644)
+      upload("./etc/nginx/conf.d/mv2app_vhost.conf","/tmp/mv2app_vhost.conf", :mode => 0644)
+      upload("./etc/nginx/conf.d/admin.conf","/tmp/admin.conf", :mode => 0644)
+      upload("./etc/nginx/conf.d/admin_ip_map.conf","/tmp/admin_ip_map.conf", :mode => 0640)
+      sudo "cp -f nginx_mv2app.conf /etc/nginx/nginx_mv2app.conf"
+      sudo "cp -f /tmp/mv2app_vhost.conf /tmp/admin.conf /tmp/admin_ip_map.conf /etc/nginx/conf.d/"
+      sudo "service nginx reload"
+   end
+
    desc "install Node.js"
    task :install_nodejs, :roles => :mvserver do
       run "cd /tmp ; wget http://nodejs.tchol.org/repocfg/el/nodejs-stable-release.noarch.rpm"
@@ -325,6 +336,18 @@ namespace :threepserver do
       run "rm -rf /tmp/cl_dash_nginx_config"
       system "rm -f /tmp/cl_dash_nginx_config.tgz"
       sudo "/etc/init.d/nginx restart"
+   end
+
+   desc "nginx config update"
+   task :update_nginx_config, :roles => :threepserver do
+      upload("./etc/nginx/nginx_3p.conf","/tmp/nginx_3p.conf", :mode => 0644)
+      upload("./etc/nginx/conf.d/3p_vhost.conf","/tmp/3p_vhost.conf", :mode => 0644)
+      upload("./etc/nginx/conf.d/3p_secret_key.conf","/tmp/3p_secret_key.conf", :mode => 0640)
+      upload("./etc/nginx/conf.d/admin.conf","/tmp/admin.conf", :mode => 0644)
+      upload("./etc/nginx/conf.d/admin_ip_map.conf","/tmp/admin_ip_map.conf", :mode => 0640)
+      sudo "cp -f nginx_3p.conf /etc/nginx/nginx_3p.conf"
+      sudo "cp -f /tmp/3p_vhost.conf /tmp/3p_secret_key.conf /tmp/admin.conf /tmp/admin_ip_map.conf /etc/nginx/conf.d/"
+      sudo "service nginx reload"
    end
 
    desc "install Node.js"
@@ -705,9 +728,21 @@ namespace :mvsyslog do
       sudo "/etc/init.d/nginx restart"
    end
 
+   desc "nginx config update"
+   task :update_nginx_config, :roles => :mvsyslog do
+      upload("./etc/nginx/nginx_mv2app.conf","/tmp/nginx_mv2app.conf", :mode => 0644)
+      upload("./etc/nginx/conf.d/mv2app_vhost.conf","/tmp/mv2app_vhost.conf", :mode => 0644)
+      upload("./etc/nginx/conf.d/admin.conf","/tmp/admin.conf", :mode => 0644)
+      upload("./etc/nginx/conf.d/admin_ip_map.conf","/tmp/admin_ip_map.conf", :mode => 0640)
+      sudo "cp -f nginx_mv2app.conf /etc/nginx/nginx_mv2app.conf"
+      sudo "cp -f /tmp/mv2app_vhost.conf /tmp/admin.conf /tmp/admin_ip_map.conf /etc/nginx/conf.d/"
+      sudo "service nginx reload"
+   end
+
    #################################################################
    # mv syslog install all packages
-   desc "all tasks to create a mv syslog server with graylog2"
+   #desc "all tasks to create a mv syslog server with graylog2" # TBD at some point
+   desc "all tasks to create a mv syslog server"
    task :install, :roles => :mvsyslog  do
       install_epelrepo 
       yum_update
@@ -724,3 +759,103 @@ namespace :mvsyslog do
    end
 end
 
+namespace :mvmonitor do
+   default_run_options[:pty] = true
+
+   desc "install epel repo"
+   task :install_epelrepo, :roles => :mvmonitor do
+      sudo "rpm -Uvh http://download.fedoraproject.org/pub/epel/6/i386/epel-release-6-7.noarch.rpm ; true"
+   end
+
+   desc "install rpmforge repo"
+   task :install_rpmforgerepo, :roles => :mvmonitor do
+      sudo "rpm -Uvh http://packages.sw.be/rpmforge-release/rpmforge-release-0.5.2-2.el6.rf.x86_64.rpm ; true"
+      sudo "rpm --import http://apt.sw.be/RPM-GPG-KEY.dag.txt ; true"
+   end
+
+   desc "common packages"
+   task :install_commonpackages, :roles => :mvmonitor  do
+      sudo "yum -y -q install screen git-all rpm-build redhat-rpm-config unifdefi readline readline-devel ncurses ncurses-devel gdbm gdbm-devel glibc-devel tcl-devel gcc unzip openssl-devel db4-devel byacc make iImageMagick.x86_64 libxml2-devel.x86_64 libxslt-devel.x86_64 memcached gcc-c++.x86_64 java-1.6.0-openjdk.x86_64 syslog-ng syslog-ng-devel syslog-ng-libdbi"
+   end
+
+   desc "update all rpms"
+   task :yum_update, :roles => :mvmonitor do
+      sudo "yum -y -q update"
+   end
+
+   desc "configure syslog-ng server"
+   task :configure_syslog_ng, :roles => :mvmonitor do
+      sudo "yum -y -q install syslog-ng syslog-ng-devel syslog-ng-libdbi"
+      sudo "service rsyslog stop"
+      sudo "chkconfig rsyslog off"
+      upload("./etc/syslog-ng/syslog-ng_client.conf_monitor","/tmp/syslog-ng_client.conf", :mode => 0644)
+      sudo "mv /etc/syslog-ng/syslog-ng.conf /etc/syslog-ng/syslog-ng.conf-"
+      sudo "mv /tmp/syslog-ng_client.conf /etc/syslog-ng/syslog-ng.conf"
+      sudo "chown root.root /etc/syslog-ng/syslog-ng.conf"
+      sudo "service syslog-ng start"
+   end
+
+   desc "update syslog-ng server"
+   task :update_syslog_ng, :roles => :mvmonitor do
+      upload("./etc/syslog-ng/syslog-ng_client.conf_monitor","/tmp/syslog-ng_client.conf", :mode => 0644)
+      sudo "mv /etc/syslog-ng/syslog-ng.conf /etc/syslog-ng/syslog-ng.conf-"
+      sudo "mv /tmp/syslog-ng_client.conf /etc/syslog-ng/syslog-ng.conf"
+      sudo "chown root.root /etc/syslog-ng/syslog-ng.conf"
+      sudo "service syslog-ng restart"
+   end
+
+   desc "uninstall nginx (if exists)"
+   task :remove_nginx, :roles => :mvmonitor do
+      sudo "yum -y remove nginx"
+   end
+
+   desc "install apache"
+   task :install_apache, :roles => :mvmonitor do
+      sudo "yum -y -q install httpd httpd-tools"
+   end
+
+   desc "update_apache_config"
+   task :update_apache_config, :roles => :mvmonitor do
+      upload("./etc/httpd/icinga/httpd.conf","/tmp/httpd.conf", :mode => 0644)
+      sudo "mv /tmp/httpd.conf /etc/httpd/conf/httpd.conf"
+      upload("./etc/httpd/icinga/icinga.conf","/tmp/icinga.conf", :mode => 0644)
+      sudo "mv /tmp/icinga.conf /etc/httpd/conf.d/icinga.conf"
+   end
+
+   desc "install nagios plugins"
+   task :install_nagios_plugins, :roles => :mvmonitor do
+      sudo "yum -y -q install nagios-plugins.x86_64 nagios-plugins-all.x86_64"
+   end
+
+   desc "install icinga and any supporting packages"
+   task :install_icinga, :roles => :mvmonitor do
+      sudo "yum -y -q install icinga.x86_64 icinga-idoutils.x86_64 icinga-gui.x86_64 icinga-doc.x86_64 icinga-api.x86_64"
+      sudo "/etc/init.d/icinga start"
+      sudo "chkconfig icinga on"
+   end
+
+   desc "update icinga users"
+   task :update_icinga_users, :roles => :mvmonitor do
+      upload("./etc/icinga/htpasswd.users","/tmp/htpasswd.users", :mode => 0644)
+      sudo "mv /tmp/htpasswd.users /etc/icinga/htpasswd.users" 
+      sudo "chown root.root /etc/icinga/htpasswd.users"
+   end
+
+   #################################################################
+   # mv syslog install all packages
+   desc "all tasks to create a mv monitoring server"
+   task :install, :roles => :mvmonitor  do
+      install_epelrepo 
+      install_rpmforgerepo
+      yum_update
+      install_commonpackages 
+      configure_syslog_ng
+      remove_nginx
+      install_apache
+      update_apache_config
+      install_nagios_plugins
+      install_icinga
+      update_icinga_users
+      #update_icinga_config
+   end
+end

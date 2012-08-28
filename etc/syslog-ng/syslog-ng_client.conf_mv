@@ -48,6 +48,7 @@ log {
 source s_unicorn {
    file ("/home/mv/mv2app/cap/shared/log/unicorn.stdout.log", program_override("app/unicorn-mv: "));
    file ("/home/mv/mv2app/cap/shared/log/unicorn.stderr.log", program_override("app/unicornerr-mv: "));
+   file ("/home/mv/mv2app/cap/shared/log/production.log", program_override("app/unicornprod-mv: "));
 };
 
 filter f_unicorn  { program("app/unicorn*") and not match(" \"-\" 400 0 "); };

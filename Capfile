@@ -841,6 +841,16 @@ namespace :mvmonitor do
       sudo "chown root.root /etc/icinga/htpasswd.users"
    end
 
+   desc "update icinga config"
+   task :update_icinga_config, :roles => :mvmonitor do
+      upload("./etc/icinga","/tmp/icinga_config", :via => :scp, :recursive => true)
+      sudo "chown -R icinga.icinga /tmp/icinga_config"
+      sudo "chown root.root /tmp/icinga_config/htpasswd.users"
+      sudo "chmod 644 /tmp/icinga_config/htpasswd.users"
+      sudo "rsync -axv /tmp/icinga_config/ /etc/icinga" 
+      sudo "rm -rf /tmp/icinga_config"
+   end
+
    #################################################################
    # mv syslog install all packages
    desc "all tasks to create a mv monitoring server"

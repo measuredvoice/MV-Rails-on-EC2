@@ -40,7 +40,7 @@ namespace :cl_dash do
 
    desc "common packages"
    task :install_commonpackages, :roles => :cldash  do
-      sudo "yum -y -q install screen nginx git-all rpm-build redhat-rpm-config unifdefi readline readline-devel ncurses ncurses-devel gdbm gdbm-devel glibc-devel tcl-devel gcc unzip openssl-devel db4-devel byacc make gcc-c++"
+      sudo "yum -y -q install screen nginx git-all rpm-build redhat-rpm-config unifdefi readline readline-devel ncurses ncurses-devel gdbm gdbm-devel glibc-devel tcl-devel gcc unzip openssl-devel db4-devel byacc make gcc-c++ ntpdate"
    end
 
    desc "install ruby 1.9.2 (from rpm)"
@@ -115,12 +115,20 @@ namespace :cl_dash do
       sudo "yum -y -q install nodejs"
    end
 
+   desc "install ntpdate cron"
+   task :install_ntpdate_cron, :roles => :cldash do
+      upload("./crontabs/ntpdate_root","/tmp/ntpdate_root", :mode => 0644)
+      sudo "chown root.root /tmp/ntpdate_root"
+      sudo "mv /tmp/ntpdate_root /etc/cron.d"
+   end
+
    #################################################################
    # cl_dash install all packages
    desc "all tasks to create a cl_dash server"
    task :install, :roles => :cldash  do
       install_epelrepo 
       install_commonpackages 
+      install_ntpdate_cron
       install_percona
       install_ruby
       update_gem
@@ -147,7 +155,7 @@ namespace :mvserver do
 
    desc "common packages"
    task :install_commonpackages, :roles => :mvserver  do
-      sudo "yum -y -q install screen git-all rpm-build redhat-rpm-config unifdefi readline readline-devel ncurses ncurses-devel gdbm gdbm-devel glibc-devel tcl-devel gcc unzip openssl-devel db4-devel byacc make iImageMagick.x86_64 libxml2-devel.x86_64 libxslt-devel.x86_64 memcached gcc-c++.x86_64"
+      sudo "yum -y -q install screen git-all rpm-build redhat-rpm-config unifdefi readline readline-devel ncurses ncurses-devel gdbm gdbm-devel glibc-devel tcl-devel gcc unzip openssl-devel db4-devel byacc make iImageMagick.x86_64 libxml2-devel.x86_64 libxslt-devel.x86_64 memcached gcc-c++.x86_64 ntpdate"
    end
 
    desc "nginx"
@@ -245,6 +253,13 @@ namespace :mvserver do
       sudo "service syslog-ng restart"
    end
 
+   desc "install ntpdate cron"
+   task :install_ntpdate_cron, :roles => :mvserver do
+      upload("./crontabs/ntpdate_root","/tmp/ntpdate_root", :mode => 0644)
+      sudo "chown root.root /tmp/ntpdate_root"
+      sudo "mv /tmp/ntpdate_root /etc/cron.d"
+   end
+
    #################################################################
    # mv server install all packages
    desc "all tasks to create a mv dev server"
@@ -252,6 +267,7 @@ namespace :mvserver do
       install_epelrepo 
       yum_update
       install_commonpackages 
+      install_ntpdate_cron
       install_nginx
       install_percona
       install_ruby
@@ -279,7 +295,7 @@ namespace :threepserver do
 
    desc "common packages"
    task :install_commonpackages, :roles => :threepserver  do
-      sudo "yum -y -q install screen git-all rpm-build redhat-rpm-config unifdefi readline readline-devel ncurses ncurses-devel gdbm gdbm-devel glibc-devel tcl-devel gcc unzip openssl-devel db4-devel byacc make iImageMagick.x86_64 libxml2-devel.x86_64 libxslt-devel.x86_64 memcached gcc-c++.x86_64"
+      sudo "yum -y -q install screen git-all rpm-build redhat-rpm-config unifdefi readline readline-devel ncurses ncurses-devel gdbm gdbm-devel glibc-devel tcl-devel gcc unzip openssl-devel db4-devel byacc make iImageMagick.x86_64 libxml2-devel.x86_64 libxslt-devel.x86_64 memcached gcc-c++.x86_64 ntpdate"
    end
 
    desc "nginx"
@@ -378,6 +394,13 @@ namespace :threepserver do
       sudo "service syslog-ng restart"
    end
 
+   desc "install ntpdate cron"
+   task :install_ntpdate_cron, :roles => :threepserver do
+      upload("./crontabs/ntpdate_root","/tmp/ntpdate_root", :mode => 0644)
+      sudo "chown root.root /tmp/ntpdate_root"
+      sudo "mv /tmp/ntpdate_root /etc/cron.d"
+   end
+
    #################################################################
    # threep server install all packages
    desc "all tasks to create a mv dev server"
@@ -385,6 +408,7 @@ namespace :threepserver do
       install_epelrepo 
       yum_update
       install_commonpackages 
+      install_ntpdate_cron
       install_nginx
       install_percona
       install_ruby
@@ -408,7 +432,7 @@ namespace :ringsail do
 
    desc "common packages"
    task :install_commonpackages, :roles => :ringsail  do
-      sudo "yum -y -q install screen nginx git-all rpm-build redhat-rpm-config unifdefi readline readline-devel ncurses ncurses-devel gdbm gdbm-devel glibc-devel tcl-devel gcc unzip openssl-devel db4-devel byacc make gcc-c++ curl-devel zlib-devel"
+      sudo "yum -y -q install screen nginx git-all rpm-build redhat-rpm-config unifdefi readline readline-devel ncurses ncurses-devel gdbm gdbm-devel glibc-devel tcl-devel gcc unzip openssl-devel db4-devel byacc make gcc-c++ curl-devel zlib-devel ntpdate"
    end
 
    desc "install ruby 1.9.2 (from rpm)"
@@ -491,12 +515,20 @@ namespace :ringsail do
       sudo "/etc/init.d/httpd restart"
    end
 
+   desc "install ntpdate cron"
+   task :install_ntpdate_cron, :roles => :ringsail do
+      upload("./crontabs/ntpdate_root","/tmp/ntpdate_root", :mode => 0644)
+      sudo "chown root.root /tmp/ntpdate_root"
+      sudo "mv /tmp/ntpdate_root /etc/cron.d"
+   end
+
    #################################################################
    # ringsail install all packages
    desc "all tasks to create a ringsail server"
    task :install, :roles => :ringsail  do
       install_epelrepo 
       install_commonpackages 
+      install_ntpdate_cron
       add_role_account
       install_percona
       install_ruby
@@ -520,7 +552,7 @@ namespace :mv2app do
 
    desc "common packages"
    task :install_commonpackages, :roles => :mv2app  do
-      sudo "yum -y -q install screen nginx git-all rpm-build redhat-rpm-config unifdefi readline readline-devel ncurses ncurses-devel gdbm gdbm-devel glibc-devel tcl-devel gcc unzip openssl-devel db4-devel byacc make libxml2 libxml2-devel libxslt libxslt-devel"
+      sudo "yum -y -q install screen nginx git-all rpm-build redhat-rpm-config unifdefi readline readline-devel ncurses ncurses-devel gdbm gdbm-devel glibc-devel tcl-devel gcc unzip openssl-devel db4-devel byacc make libxml2 libxml2-devel libxslt libxslt-devel ntpdate"
    end
 
    desc "install ruby 1.9.2 (from rpm)"
@@ -595,12 +627,20 @@ namespace :mv2app do
       sudo "yum -y -q install nodejs"
    end
 
+   desc "install ntpdate cron"
+   task :install_ntpdate_cron, :roles => :mv2app do
+      upload("./crontabs/ntpdate_root","/tmp/ntpdate_root", :mode => 0644)
+      sudo "chown root.root /tmp/ntpdate_root"
+      sudo "mv /tmp/ntpdate_root /etc/cron.d"
+   end
+
    #################################################################
    # mv2app install all packages
    desc "all tasks to create a mv2app server"
    task :install, :roles => :mv2app  do
       install_epelrepo 
       install_commonpackages 
+      install_ntpdate_cron
       install_percona
       install_ruby
       update_gem
@@ -628,7 +668,7 @@ namespace :mvsyslog do
 
    desc "common packages"
    task :install_commonpackages, :roles => :mvsyslog  do
-      sudo "yum -y -q install screen git-all rpm-build redhat-rpm-config unifdefi readline readline-devel ncurses ncurses-devel gdbm gdbm-devel glibc-devel tcl-devel gcc unzip openssl-devel db4-devel byacc make iImageMagick.x86_64 libxml2-devel.x86_64 libxslt-devel.x86_64 memcached gcc-c++.x86_64 java-1.6.0-openjdk.x86_64 syslog-ng syslog-ng-devel syslog-ng-libdbi"
+      sudo "yum -y -q install screen git-all rpm-build redhat-rpm-config unifdefi readline readline-devel ncurses ncurses-devel gdbm gdbm-devel glibc-devel tcl-devel gcc unzip openssl-devel db4-devel byacc make iImageMagick.x86_64 libxml2-devel.x86_64 libxslt-devel.x86_64 memcached gcc-c++.x86_64 java-1.6.0-openjdk.x86_64 syslog-ng syslog-ng-devel syslog-ng-libdbi ntpdate"
    end
 
    desc "configure syslog-ng server"
@@ -667,6 +707,13 @@ namespace :mvsyslog do
       upload("./crontabs/syslog_root", "/tmp/syslog_root", :mode => 0644)
       sudo "mv -f /tmp/syslog_root /etc/cron.d/syslog_root"
       sudo "chown root.root /etc/cron.d/syslog_root"
+   end
+
+   desc "install ntpdate cron"
+   task :install_ntpdate_cron, :roles => :mvserver do
+      upload("./crontabs/ntpdate_root","/tmp/ntpdate_root", :mode => 0644)
+      sudo "chown root.root /tmp/ntpdate_root"
+      sudo "mv /tmp/ntpdate_root /etc/cron.d"
    end
 
    desc "nginx"
@@ -747,6 +794,7 @@ namespace :mvsyslog do
       install_epelrepo 
       yum_update
       install_commonpackages 
+      install_ntpdate_cron
       configure_syslog_ng
       #install_elasticsearch
       #install_mongodb
@@ -775,7 +823,7 @@ namespace :mvmonitor do
 
    desc "common packages"
    task :install_commonpackages, :roles => :mvmonitor  do
-      sudo "yum -y -q install screen git-all rpm-build redhat-rpm-config unifdefi readline readline-devel ncurses ncurses-devel gdbm gdbm-devel glibc-devel tcl-devel gcc unzip openssl-devel db4-devel byacc make iImageMagick.x86_64 libxml2-devel.x86_64 libxslt-devel.x86_64 memcached gcc-c++.x86_64 java-1.6.0-openjdk.x86_64 syslog-ng syslog-ng-devel syslog-ng-libdbi"
+      sudo "yum -y -q install screen git-all rpm-build redhat-rpm-config unifdefi readline readline-devel ncurses ncurses-devel gdbm gdbm-devel glibc-devel tcl-devel gcc unzip openssl-devel db4-devel byacc make iImageMagick.x86_64 libxml2-devel.x86_64 libxslt-devel.x86_64 memcached gcc-c++.x86_64 java-1.6.0-openjdk.x86_64 syslog-ng syslog-ng-devel syslog-ng-libdbi ntpdate"
    end
 
    desc "update all rpms"
@@ -851,6 +899,13 @@ namespace :mvmonitor do
       sudo "rm -rf /tmp/icinga_config"
    end
 
+   desc "install ntpdate cron"
+   task :install_ntpdate_cron, :roles => :mv2app do
+      upload("./crontabs/ntpdate_root","/tmp/ntpdate_root", :mode => 0644)
+      sudo "chown root.root /tmp/ntpdate_root"
+      sudo "mv /tmp/ntpdate_root /etc/cron.d"
+   end
+
    #################################################################
    # mv syslog install all packages
    desc "all tasks to create a mv monitoring server"
@@ -859,6 +914,7 @@ namespace :mvmonitor do
       install_rpmforgerepo
       yum_update
       install_commonpackages 
+      install_ntpdate_cron
       configure_syslog_ng
       remove_nginx
       install_apache

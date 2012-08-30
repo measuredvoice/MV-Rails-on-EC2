@@ -1,0 +1,3 @@
+# manual time sync with ntpdate
+21 * * * *       root    /usr/sbin/ntpdate time.apple.com >/dev/null 2>&1
+

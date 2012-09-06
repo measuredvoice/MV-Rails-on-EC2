@@ -200,6 +200,20 @@ namespace :mvserver do
       sudo "chown -R mv.mv /home/mv/.ssh"
    end
 
+   desc "add deploy keys for github"
+   task :add_deploy_keys, :roles => :mvserver do
+      upload("./keys/git_mv_deploy_key","/tmp/git_deploy_key", :mode => 0600)
+      upload("./keys/git_mv_deploy_key.pub","/tmp/git_deploy_key.pub", :mode => 0644)
+      sudo "cp -f /tmp/git_deploy_key /home/mv/.ssh/id_rsa"
+      sudo "cp -f /tmp/git_deploy_key.pub /home/mv/.ssh/id_rsa.pub"
+      run "rm -f /tmp/git_deploy_key"
+      run "rm -f /tmp/git_deploy_key.pub"
+      sudo "chmod 600 /home/mv/.ssh/id_rsa"
+      sudo "chmod 644 /home/mv/.ssh/id_rsa.pub"
+
+      sudo "chown -R mv.mv /home/mv/.ssh"
+   end
+
    desc "nginx config install"
    task :install_nginx_config, :roles => :mvserver do
       system "tar czf /tmp/cl_dash_nginx_config.tgz ./etc/nginx"
@@ -274,6 +288,7 @@ namespace :mvserver do
       update_gem
       install_bundler   
       add_role_account
+      add_deploy_keys
       install_nodejs
       install_nginx_config
       configure_syslog_ng
@@ -337,6 +352,20 @@ namespace :threepserver do
       sudo "cp -f /tmp/mv_deploy_key.pub /home/mv/.ssh/authorized_keys"
       run "rm -f /tmp/mv_deploy_key.pub"
       sudo "chmod 600 /home/mv/.ssh/authorized_keys"
+      sudo "chown -R mv.mv /home/mv/.ssh"
+   end
+
+   desc "add deploy keys for github"
+   task :add_deploy_keys, :roles => :threepserver do
+      upload("./keys/git_3p_deploy_key","/tmp/git_deploy_key", :mode => 0600)
+      upload("./keys/git_3p_deploy_key.pub","/tmp/git_deploy_key.pub", :mode => 0644)
+      sudo "cp -f /tmp/git_deploy_key /home/mv/.ssh/id_rsa"
+      sudo "cp -f /tmp/git_deploy_key.pub /home/mv/.ssh/id_rsa.pub"
+      run "rm -f /tmp/git_deploy_key"
+      run "rm -f /tmp/git_deploy_key.pub"
+      sudo "chmod 600 /home/mv/.ssh/id_rsa"
+      sudo "chmod 644 /home/mv/.ssh/id_rsa.pub"
+
       sudo "chown -R mv.mv /home/mv/.ssh"
    end
 
@@ -415,6 +444,7 @@ namespace :threepserver do
       update_gem
       install_bundler   
       add_role_account
+      add_deploy_keys
       install_nodejs
       install_nginx_config
       configure_syslog_ng

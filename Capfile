@@ -234,7 +234,7 @@ namespace :mvserver do
       upload("./etc/nginx/conf.d/mv2app_vhost.conf","/tmp/mv2app_vhost.conf", :mode => 0644)
       upload("./etc/nginx/conf.d/admin.conf","/tmp/admin.conf", :mode => 0644)
       upload("./etc/nginx/conf.d/admin_ip_map.conf","/tmp/admin_ip_map.conf", :mode => 0640)
-      sudo "cp -f nginx_mv2app.conf /etc/nginx/nginx_mv2app.conf"
+      sudo "cp -f /tmp/nginx_mv2app.conf /etc/nginx/nginx_mv2app.conf"
       sudo "cp -f /tmp/mv2app_vhost.conf /tmp/admin.conf /tmp/admin_ip_map.conf /etc/nginx/conf.d/"
       sudo "service nginx reload"
    end

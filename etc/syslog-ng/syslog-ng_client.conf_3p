@@ -49,6 +49,7 @@ source s_unicorn {
    file ("/home/mv/three-poppies/cap/shared/log/unicorn.stdout.log", program_override("app/unicorn-3p: "));
    file ("/home/mv/three-poppies/cap/shared/log/unicorn.stderr.log", program_override("app/unicornerr-3p: "));
    file ("/home/mv/three-poppies/cap/shared/log/production.log", program_override("app/unicornprod-3p: "));
+   file ("/home/mv/three-poppies/cap/shared/log/delayed_job.log", program_override("app/unicorndelayed-3p: "));
 };
 
 filter f_unicorn  { program("app/unicorn*") and not match(" \"-\" 400 0 "); };

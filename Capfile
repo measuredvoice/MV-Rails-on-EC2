@@ -271,7 +271,7 @@ namespace :mvserver do
    task :install_logrotate, :roles => :mvserver do
       upload("./etc/logrotate.d/unicorn_mv2app","/tmp/unicorn_mv2app.logrotate", :mode => 0644)
       sudo "chown root.root /tmp/unicorn_mv2app.logrotate"
-      sudo "mv /tmp/unicorn_mv2app.logrotate /etc/logrotate.di/unicorn_mv2app"
+      sudo "mv /tmp/unicorn_mv2app.logrotate /etc/logrotate.d/unicorn_mv2app"
    end
 
    desc "install ntpdate cron"

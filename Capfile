@@ -267,6 +267,13 @@ namespace :mvserver do
       sudo "service syslog-ng restart"
    end
 
+   desc "log rotation configuration "
+   task :install_logrotate, :roles => :mvserver do
+      upload("./etc/logrotate.d/unicorn_mv2app","/tmp/unicorn_mv2app.logrotate", :mode => 0644)
+      sudo "chown root.root /tmp/unicorn_mv2app.logrotate"
+      sudo "mv /tmp/unicorn_mv2app.logrotate /etc/logrotate.di/unicorn_mv2app"
+   end
+
    desc "install ntpdate cron"
    task :install_ntpdate_cron, :roles => :mvserver do
       upload("./crontabs/ntpdate_root","/tmp/ntpdate_root", :mode => 0644)
@@ -292,6 +299,7 @@ namespace :mvserver do
       install_nodejs
       install_nginx_config
       configure_syslog_ng
+      install_logrotate
    end
 end
 
@@ -423,6 +431,13 @@ namespace :threepserver do
       sudo "service syslog-ng restart"
    end
 
+   desc "log rotation configuration "
+   task :install_logrotate, :roles => :threepserver do
+      upload("./etc/logrotate.d/unicorn_3p","/tmp/unicorn_3p.logrotate", :mode => 0644)
+      sudo "chown root.root /tmp/unicorn_3p.logrotate"
+      sudo "mv /tmp/unicorn_3p.logrotate /etc/logrotate.d/unicorn_3p"
+   end
+
    desc "install ntpdate cron"
    task :install_ntpdate_cron, :roles => :threepserver do
       upload("./crontabs/ntpdate_root","/tmp/ntpdate_root", :mode => 0644)
@@ -448,6 +463,7 @@ namespace :threepserver do
       install_nodejs
       install_nginx_config
       configure_syslog_ng
+      install_logrotate
    end
 end
 

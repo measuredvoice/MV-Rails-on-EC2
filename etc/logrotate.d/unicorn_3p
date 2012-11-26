@@ -13,6 +13,6 @@
    # config.  Unicorn supports the USR1 signal and we send it
    # as our "lastaction" action:
    lastaction
-      /etc/init.d/unicorn_mv2app reload
+      /etc/init.d/unicorn_3p reload
    endscript
 }

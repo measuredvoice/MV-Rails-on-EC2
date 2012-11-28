@@ -456,6 +456,16 @@ namespace :threepserver do
       sudo "mv /tmp/ntpdate_root /etc/cron.d"
    end
 
+   desc "nagios client install"
+   task :install_nagios_client, :roles => :threepserver do
+      sudo "yum -y -q install nrpe nagios-plugins-disk"
+      upload("./etc/nagios/nrpe.cfg","/tmp/nrpe.cfg", :mode => 0644)
+      sudo "chown root.root /tmp/nrpe.cfg"
+      sudo "mv /etc/nagios/nrpe.cfg /etc/nagios/nrpe.cfg.orig"
+      sudo "mv /tmp/nrpe.cfg /etc/nagios/nrpe.cfg"
+      sudo "pidof nrpe || /etc/init.d/nrpe start"
+   end
+
    #################################################################
    # threep server install all packages
    desc "all tasks to create a mv dev server"
@@ -475,6 +485,7 @@ namespace :threepserver do
       install_nginx_config
       configure_syslog_ng
       install_logrotate
+      install_nagios_client
    end
 end
 

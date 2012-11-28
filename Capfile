@@ -288,7 +288,7 @@ namespace :mvserver do
       sudo "chown root.root /tmp/nrpe.cfg"
       sudo "mv /etc/nagios/nrpe.cfg /etc/nagios/nrpe.cfg.orig"
       sudo "mv /tmp/nrpe.cfg /etc/nagios/nrpe.cfg"
-      sudo "pidof nrpe || /etc/init.d/nrpe start"
+      sudo "pidof nrpe || sudo /etc/init.d/nrpe start"
    end
 
    #################################################################
@@ -463,7 +463,7 @@ namespace :threepserver do
       sudo "chown root.root /tmp/nrpe.cfg"
       sudo "mv /etc/nagios/nrpe.cfg /etc/nagios/nrpe.cfg.orig"
       sudo "mv /tmp/nrpe.cfg /etc/nagios/nrpe.cfg"
-      sudo "pidof nrpe || /etc/init.d/nrpe start"
+      sudo "pidof nrpe || sudo /etc/init.d/nrpe start"
    end
 
    #################################################################

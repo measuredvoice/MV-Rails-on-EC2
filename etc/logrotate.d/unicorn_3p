@@ -1,4 +1,4 @@
-/home/mv/threepoppies/cap/shared/log/unicorn*.log /home/mv/threepoppies/cap/shared/log/production.log {
+/home/mv/three-poppies/cap/shared/log/unicorn*.log /home/mv/three-poppies/cap/shared/log/production.log {
    daily
    missingok
    rotate 30
@@ -13,6 +13,6 @@
    # config.  Unicorn supports the USR1 signal and we send it
    # as our "lastaction" action:
    lastaction
-      /etc/init.d/unicorn_3p reload
+      /etc/init.d/unicorn_three-poppies reload
    endscript
 }

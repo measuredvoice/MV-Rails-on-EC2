@@ -281,6 +281,16 @@ namespace :mvserver do
       sudo "mv /tmp/ntpdate_root /etc/cron.d"
    end
 
+   desc "nagios client install"
+   task :install_nagios_client, :roles => :mvserver do
+      sudo "yum -y -q install nrpe nagios-plugins-disk"
+      upload("./etc/nagios/nrpe.cfg","/tmp/nrpe.cfg", :mode => 0644)
+      sudo "chown root.root /tmp/nrpe.cfg"
+      sudo "mv /etc/nagios/nrpe.cfg /etc/nagios/nrpe.cfg.orig"
+      sudo "mv /tmp/nrpe.cfg /etc/nagios/nrpe.cfg"
+      sudo "pidof nrpe || /etc/init.d/nrpe start"
+   end
+
    #################################################################
    # mv server install all packages
    desc "all tasks to create a mv dev server"
@@ -300,6 +310,7 @@ namespace :mvserver do
       install_nginx_config
       configure_syslog_ng
       install_logrotate
+      install_nagios_client
    end
 end
 
@@ -918,7 +929,7 @@ namespace :mvmonitor do
 
    desc "install nagios plugins"
    task :install_nagios_plugins, :roles => :mvmonitor do
-      sudo "yum -y -q install nagios-plugins.x86_64 nagios-plugins-all.x86_64"
+      sudo "yum -y -q install nagios-plugins.x86_64 nagios-plugins-all.x86_64 nagios-plugins-nrpe"
    end
 
    desc "install icinga and any supporting packages"

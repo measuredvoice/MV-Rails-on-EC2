@@ -155,7 +155,7 @@ namespace :mvserver do
 
    desc "common packages"
    task :install_commonpackages, :roles => :mvserver  do
-      sudo "yum -y -q install screen git-all rpm-build redhat-rpm-config unifdefi readline readline-devel ncurses ncurses-devel gdbm gdbm-devel glibc-devel tcl-devel gcc unzip openssl-devel db4-devel byacc make iImageMagick.x86_64 libxml2-devel.x86_64 libxslt-devel.x86_64 memcached gcc-c++.x86_64 ntpdate"
+      sudo "yum -y -q install screen git-all rpm-build redhat-rpm-config unifdefi readline readline-devel ncurses ncurses-devel gdbm gdbm-devel glibc-devel tcl-devel gcc unzip openssl-devel db4-devel byacc make ImageMagick.x86_64 libxml2-devel.x86_64 libxslt-devel.x86_64 memcached gcc-c++.x86_64 ntpdate"
    end
 
    desc "nginx"

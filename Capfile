@@ -166,10 +166,25 @@ namespace :mvserver do
    end
 
    desc "install ruby 1.9.2 (from rpm)"
-   task :install_ruby, :roles => :mvserver  do
+   task :install_ruby192, :roles => :mvserver  do
       upload("./rpms/el6/x86_64/ruby-1.9.2p290-3.el6.x86_64.rpm","/tmp/ruby-1.9.2p290-3.el6.x86_64.rpm", :mode => 0600)
       sudo "yum -y -q  localinstall /tmp/ruby-1.9.2p290-3.el6.x86_64.rpm"
       sudo "rm -f /tmp/ruby-1.9.2p290-3.el6.x86_64.rpm" 
+   end
+
+   desc "install ruby 1.9.3 (from rpm)"
+   task :install_ruby, :roles => :mvserver  do
+      upload("./rpms/el6/x86_64/ruby-1.9.3p327-1.el6.x86_64.rpm","/tmp/ruby-1.9.3p327-1.el6.x86_64.rpm", :mode => 0600)
+      sudo "yum -y -q  localinstall /tmp/ruby-1.9.3p327-1.el6.x86_64.rpm"
+      sudo "rm -f /tmp/ruby-1.9.3p327-1.el6.x86_64.rpm" 
+   end
+
+   desc "update to  ruby 1.9.3 (from rpm)"
+   task :update_ruby, :roles => :mvserver  do
+      upload("./rpms/el6/x86_64/ruby-1.9.3p327-1.el6.x86_64.rpm","/tmp/ruby-1.9.3p327-1.el6.x86_64.rpm", :mode => 0600)
+      sudo "yum -y remove ruby-1.9.2p290"
+      sudo "yum -y -q  localinstall /tmp/ruby-1.9.3p327-1.el6.x86_64.rpm"
+      sudo "rm -f /tmp/ruby-1.9.3p327-1.el6.x86_64.rpm" 
    end
 
    desc "update gem >= 1.8"
@@ -340,10 +355,25 @@ namespace :threepserver do
    end
 
    desc "install ruby 1.9.2 (from rpm)"
-   task :install_ruby, :roles => :threepserver  do
+   task :install_ruby192, :roles => :threepserver  do
       upload("./rpms/el6/x86_64/ruby-1.9.2p290-3.el6.x86_64.rpm","/tmp/ruby-1.9.2p290-3.el6.x86_64.rpm", :mode => 0600)
       sudo "yum -y -q  localinstall /tmp/ruby-1.9.2p290-3.el6.x86_64.rpm"
       sudo "rm -f /tmp/ruby-1.9.2p290-3.el6.x86_64.rpm" 
+   end
+
+   desc "install ruby 1.9.3 (from rpm)"
+   task :install_ruby, :roles => :threepserver  do
+      upload("./rpms/el6/x86_64/ruby-1.9.3p327-1.el6.x86_64.rpm","/tmp/ruby-1.9.3p327-1.el6.x86_64.rpm", :mode => 0600)
+      sudo "yum -y -q  localinstall /tmp/ruby-1.9.3p327-1.el6.x86_64.rpm"
+      sudo "rm -f /tmp/ruby-1.9.3p327-1.el6.x86_64.rpm" 
+   end
+
+   desc "update to ruby 1.9.3 (from rpm)"
+   task :update_ruby, :roles => :threepserver  do
+      upload("./rpms/el6/x86_64/ruby-1.9.3p327-1.el6.x86_64.rpm","/tmp/ruby-1.9.3p327-1.el6.x86_64.rpm", :mode => 0600)
+      sudo "yum -y remove ruby-1.9.2p290"
+      sudo "yum -y -q  localinstall /tmp/ruby-1.9.3p327-1.el6.x86_64.rpm"
+      sudo "rm -f /tmp/ruby-1.9.3p327-1.el6.x86_64.rpm" 
    end
 
    desc "update gem >= 1.8"

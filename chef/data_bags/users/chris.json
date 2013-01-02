@@ -1,0 +1,11 @@
+{ 
+  "id": "chris",
+  "password": "*",
+  "ssh_keys": [
+    "ssh-dss AAAAB3NzaC1kc3MAAACBAIT8jQBEfjPxc8+o+5rXDFQCsYc9G6wbqDFxLFTAbQhdX+9SzesMOI1Q2eI4nmRhEqU8Ea1ih989w5vIciwxwTUBxTfqV+c9DlhW9CIqc8Zpf67O7VYiFSuq2H0JQ/plJk5OGzB+nho2CQJ6pmKwm6Oxdi6y3ZfYDWe8eP9dL1UTAAAAFQDCobYRnFG1z8ALXmc/M8mUgvertwAAAIBOtg24O/DgWCNz4q/UfqLwV2zgODm7d1yF9VIuhBfxwFvWzKRd8ajjQUq7+f44v/1N1d12HTLW25wL23xYQ5PQUStP2YXf9Nz1CnSHC5h11tsrfGcby7KUpUx4JzYv7Jq5D2GaAYjBZp3EwFEA3FBahdl4AWIJ2BzFPGfD146FQAAAAIA6/Wz6pQNrE6UzV2ZUhmGybixlIjeon21T9tq5wKXtZie0MOTpkTG7WEluf7u26lz/apK4ZVfLhAQ3VHuJuEQQn0+CXxXL+RHzal+aHl6IPHNa0+pMx12Q1Y+al4ndoseDxhxNJxU6ohieuXdzQpTOeNHl8Kwy+dkyv+8VfItx8Q== chris@Arthur.local"
+  ],
+  "groups": [ "wheel" ],
+  "uid": 33001,
+  "shell": "\/bin\/bash",
+  "comment": "Chris Radcliff"
+}

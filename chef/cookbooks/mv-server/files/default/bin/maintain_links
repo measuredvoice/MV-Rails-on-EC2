@@ -1,0 +1,56 @@
+#!/bin/sh 
+
+###############################################################################
+# maintain_links  - adh 20120514
+#    maintain the links for files in log directory
+#    needs to be run once an hour at a minimum as new logs may appear
+###############################################################################
+
+
+###############################################################################
+# Variables
+PATH=/bin:/usr/bin:/sbin:/usr/sbin
+LOGROOT="/logs/remote"
+DATE=`date +%Y%m%d`
+debug=0
+###############################################################################
+
+###############################################################################
+# Main
+###############################################################################
+
+# find all files that are not compressed under $LOGROOT and compress them
+for file in `find $LOGROOT -type f -name "*$DATE"` 
+do
+	shortfile=`echo $file | sed "s/_$DATE//"`
+
+	# check if link is pointimg at today's file
+	# if it is not then delete it
+	if [ -h $shortfile ]
+	then
+		ls -l $shortfile | grep $DATE > /dev/null 2>&1
+		error=$?
+
+		if [ $error -gt 0 ]
+		then
+			# don't remove the old link if there is no new
+			# file to replace it with
+			if [ -f $file ]
+			then
+				rm -f $shortfile
+			fi
+		fi
+	fi
+
+	# create a link if the link is not present
+	if [ ! -h $shortfile ]
+	then
+		ln -s $file $shortfile
+		if [ $debug -gt 0 ]
+		then
+			echo Created link $shortfile pointing to $file
+		fi
+	fi
+done
+
+exit 0

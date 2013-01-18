@@ -58,9 +58,10 @@ Vagrant::Config.run do |config|
     }
 
     chef.run_list = [
-      #"recipe[mv-server::mv2app]"
+      "recipe[mv-server::mv2app]",
+      "recipe[mv-server::deploy_mv]"
       #"recipe[mv-server::threepoppies]"
-      "recipe[mv-server::syslog-server]"
+      #"recipe[mv-server::syslog-server]"
     ]
   end
 end

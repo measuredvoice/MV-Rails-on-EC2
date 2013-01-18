@@ -30,3 +30,8 @@ for pkg in [ 'libxml2',
       action :install
    end
 end
+
+service "memcached" do
+  supports :restart => true, :status => true
+  action [ :enable, :start ]
+end

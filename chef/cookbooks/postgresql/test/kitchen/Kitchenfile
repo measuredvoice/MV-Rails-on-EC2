@@ -1,0 +1,6 @@
+cookbook "postgresql" do
+  configuration "default"
+  configuration "ruby"
+  configuration "server"
+  configuration "ppa_pitti_postgresql"
+end

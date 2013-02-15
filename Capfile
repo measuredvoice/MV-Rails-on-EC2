@@ -534,10 +534,19 @@ namespace :ringsail do
    end
 
    desc "install ruby 1.9.2 (from rpm)"
-   task :install_ruby, :roles => :ringsail  do
+   task :install_ruby192, :roles => :ringsail  do
       upload("./rpms/el5/x86_64/ruby-1.9.2p290-3.x86_64.rpm","/tmp/ruby-1.9.2p290-3.x86_64.rpm", :mode => 0600)
       sudo "yum -y -q --nogpgcheck  localinstall /tmp/ruby-1.9.2p290-3.x86_64.rpm"
       sudo "rm -f /tmp/ruby-1.9.2p290-3.x86_64.rpm" 
+   end
+
+   desc "install ruby 1.9.3 (from rpm)"
+   task :install_ruby, :roles => :ringsail  do
+      upload("./rpms/el5/x86_64/ruby-1.9.3p374-1.x86_64.rpm","/tmp/ruby-1.9.3p374-1.x86_64.rpm", :mode => 0600)
+      upload("./rpms/el5/x86_64/yaml-0.1.4-1.x86_64.rpm","/tmp/yaml-0.1.4-1.x86_64.rpm", :mode => 0600)
+      sudo "yum -y -q --nogpgcheck localinstall /tmp/yaml-0.1.4-1.x86_64.rpm /tmp/ruby-1.9.3p374-1.x86_64.rpm"
+      sudo "rm -f /tmp/ruby-1.9.3p374-1.x86_64.rpm" 
+      sudo "rm -f /tmp/yaml-0.1.4-1.x86_64.rpm" 
    end
 
    desc "update gem >= 1.8"

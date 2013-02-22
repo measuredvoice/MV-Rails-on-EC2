@@ -1,0 +1,18 @@
+/home/mv/three-poppies/cap/shared/log/delayed_job.log {
+   daily
+   missingok
+   rotate 30
+   compress
+   dateext
+
+   # this is important if using "compress" since we need to call
+   # the "lastaction" script below before compressing:
+   delaycompress
+
+   # note the lack of the evil "copytruncate" option in this
+   # config.  Unicorn supports the USR1 signal and we send it
+   # as our "lastaction" action:
+   lastaction
+      /bin/su - mv -c '/bin/bash -l -c "RAILS_ENV=production /home/mv/three-poppies/cap/current/script/delayed_job_queues restart"' >/dev/null 2>&1
+   endscript
+}

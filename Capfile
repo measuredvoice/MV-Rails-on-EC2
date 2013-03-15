@@ -530,7 +530,7 @@ namespace :ringsail do
 
    desc "common packages"
    task :install_commonpackages, :roles => :ringsail  do
-      sudo "yum -y -q install screen nginx git-all rpm-build redhat-rpm-config unifdefi readline readline-devel ncurses ncurses-devel gdbm gdbm-devel glibc-devel tcl-devel gcc unzip openssl-devel db4-devel byacc make gcc-c++ curl-devel zlib-devel ntpdate"
+      sudo "yum -y -q install screen nginx git-all rpm-build redhat-rpm-config unifdefi readline readline-devel ncurses ncurses-devel gdbm gdbm-devel glibc-devel tcl-devel gcc unzip openssl-devel db4-devel byacc make gcc-c++ curl-devel zlib-devel ntpdate libxml2 libxml2-devel libxslt libxslt-devel"
    end
 
    desc "install ruby 1.9.2 (from rpm)"

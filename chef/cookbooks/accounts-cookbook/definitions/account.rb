@@ -5,30 +5,33 @@
 # Copyright 2009, Alexander van Zoest
 #
 #define :account, :uid => nil,  :comment => nil, :group => node[:accounts][:default][:group], :ssh => node[:accounts][:default][:do_ssh], :sudo => node[:accounts][:default][:do_sudo] do
-define :account, :account_type => "user", :uid => nil,  :comment => nil, :group => "users", :ssh => true, :sudo => false do
+define :account, :account_type => "user", :uid => nil,  :comment => nil, :group => "users", :ssh => false, :sudo => false do
 #    group params[:group] do
 #      gid params[:gid]
 #    end
 
+
+  home_dir = params[:home] || "#{node[:accounts][:dir]}/#{params[:name]}"
+
   user params[:name] do
     comment params[:comment] if params[:comment]
-    password params[:password].crypt(params[:password]) if params[:password]
+    password params[:password] if params[:password]
     uid params[:uid] if params[:uid]
     gid params[:gid] || params[:group]
     shell params[:shell] || node[:accounts][:default][:shell]
-    home "#{node[:accounts][:dir]}/#{params[:name]}"
+    home home_dir
     action :create
   end
 
-  directory "#{node[:accounts][:dir]}/#{params[:name]}" do
+  directory home_dir do
     recursive true
     owner params[:name]
     group params[:gid] || params[:group]
-    mode 0700
+    mode 0711
   end
 
   if params[:ssh]
-    remote_directory "#{node[:accounts][:dir]}/#{params[:name]}/.ssh" do
+    remote_directory "#{home_dir}/.ssh" do
       cookbook node[:accounts][:cookbook]
       source "#{params[:account_type]}s/#{params[:name]}/ssh"
       files_backup node[:accounts][:default][:file_backup]
@@ -42,17 +45,8 @@ define :account, :account_type => "user", :uid => nil,  :comment => nil, :group 
   end
 
   if params[:sudo]
-    unless node[:accounts].has_key?(:sudo)
-      node[:accounts][:sudo] = Mash.new
-    end
-    unless node[:accounts][:sudo].has_key?(:groups)
-       node[:accounts][:sudo][:groups] = Array.new
-    end
-    unless node[:accounts][:sudo].has_key?(:users)
-       node[:accounts][:sudo][:users] = Array.new 
-    end
     unless node[:accounts][:sudo][:groups].include?(params[:group])
-        node[:accounts][:sudo][:users] |= [params[:name]]
+        node.set[:accounts][:sudo][:users] |= [params[:name]]
     end
   end
 

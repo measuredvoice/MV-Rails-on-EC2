@@ -8,6 +8,8 @@ if Chef::Config[:solo]
    Chef::Config[:data_bag_path] = "data_bags"
 end
 
+node.set[:accounts][:sudo][:users] = ['adh','chris']
+
 # setup yum
 include_recipe "mv-server::yum_setup"
 

@@ -8,7 +8,7 @@
 include_recipe "mv-server::default"
 
 # syslog-ng client
-node[:syslog_ng][:source] = "syslog-ng/syslog-ng_client.conf"
+node.set[:syslog_ng][:source] = "syslog-ng/syslog-ng_client.conf"
 include_recipe "mv-server::syslog"
 
 # install.apache

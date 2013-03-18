@@ -4,8 +4,24 @@
 #   Build a server for mv2app
 #############################################
 
-# common stuff
-include_recipe "mv-server::default"
+if Chef::Config[:solo]
+   Chef::Config[:data_bag_path] = "data_bags"
+end
+
+# setup yum
+include_recipe "mv-server::yum_setup"
+
+# create users
+include_recipe "mv-server::users"
+
+# install build essential
+include_recipe "build-essential"
+
+# packages
+include_recipe "mv-server::required-packages"
+
+# install a default nagios client
+include_recipe "mv-server::nagios_client"
 
 # nginx and mv server config
 include_recipe "mv-server::nginx"
@@ -23,8 +39,6 @@ include_recipe "mv-server::install_ruby"
 # syslog-ng
 node.set[:syslog_ng][:source] = "syslog-ng/syslog-ng_client.conf_mv"
 include_recipe "mv-server::syslog"
-
-# initial code deploy (?)
 
 # nginx config
 node.set['nginx']['default_site_enabled'] = false
@@ -128,6 +142,8 @@ if Chef::Config[:solo]
      supports :restart => true, :status => true
      action [ :enable, :start ]
    end
+
+   #include_recipe "mv-server::deploy_mv"
 
    # create users and databases 
    #include_recipe "database"

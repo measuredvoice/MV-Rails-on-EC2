@@ -5,6 +5,7 @@ apphome = "/home/mv/mv2app"
 branch_name = case node.hostname
    when "genua"  then "staging"
    when "omnia"  then "develop"
+   when "omnia2"  then "develop"
 end
 
 # branches by environment if not defined by hostname
@@ -59,29 +60,43 @@ deploy "#{apphome}/cap" do
         interpreter 'bash'
         cwd current_release_directory
         user running_deploy_user
-        # This is the real one - hack used for development of deploy
-        #code <<-EOS
-        #  bundle install --quiet --deployment --path #{bundler_depot} \
-        #    --without #{excluded_groups.join(' ')} 
-        #EOS
         code <<-EOS
-          rm -f #{release_path}/Gemfile.lock 
-          bundle install --quiet --no-deployment --path #{bundler_depot} \
+          bundle install --quiet --deployment --path #{bundler_depot} \
             --without #{excluded_groups.join(' ')} 
           cp #{release_path}/config/files/#{multistage}/database.yml #{apphome}/cap/shared/config
           cp #{release_path}/config/files/#{multistage}/memcached.yml #{apphome}/cap/shared/config
           cp #{release_path}/config/files/#{multistage}/too_many_secrets.rb #{apphome}/cap/shared/config
           crontab config/files/#{multistage}/crontab.txt
         EOS
+        # This is the hack used for development of deploy
+        ## code <<-EOS
+        ##   rm -f #{release_path}/Gemfile.lock 
+        ##   bundle install --quiet --no-deployment --path #{bundler_depot} \
+        ##     --without #{excluded_groups.join(' ')} 
+        ##   cp #{release_path}/config/files/#{multistage}/database.yml #{apphome}/cap/shared/config
+        ##   cp #{release_path}/config/files/#{multistage}/memcached.yml #{apphome}/cap/shared/config
+        ##   cp #{release_path}/config/files/#{multistage}/too_many_secrets.rb #{apphome}/cap/shared/config
+        ##   crontab config/files/#{multistage}/crontab.txt
+        ## EOS
           #./script/post_update.sh #{multistage}
       end
-   end
 
+      script 'Assets precompile' do
+        interpreter 'bash'
+        cwd current_release_directory
+        user running_deploy_user
+        code <<-EOS
+          ln -s #{apphome}/cap/shared/assets #{release_path}/public/assets
+          bundle exec rake assets:precompile
+        EOS
+      end
+   end
+  
    symlinks "config/memcached.yml" => "config/memcached.yml",
             "config/too_many_secrets.rb" => "config/too_many_secrets.rb",
             "log" => "log",
             "pids" => "pids"
-   
+
    migrate true
    migration_command "bundle exec rake db:migrate"
    environment "RAILS_ENV" => "production"

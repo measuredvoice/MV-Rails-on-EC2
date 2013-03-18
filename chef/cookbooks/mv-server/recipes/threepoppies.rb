@@ -21,13 +21,13 @@ include_recipe "nodejs"
 include_recipe "mv-server::install_ruby"
 
 # syslog-ng
-node[:syslog_ng][:source] = "syslog-ng/syslog-ng_client.conf_3p"
+node.set[:syslog_ng][:source] = "syslog-ng/syslog-ng_client.conf_3p"
 include_recipe "mv-server::syslog"
 
 # initial code deploy (?)
 
 # nginx config
-node['nginx']['default_site_enabled'] = false
+node.set['nginx']['default_site_enabled'] = false
 
 cookbook_file "#{node[:nginx][:dir]}/sites-available/3p_vhost.conf" do
    source "nginx/3p_vhost.conf"

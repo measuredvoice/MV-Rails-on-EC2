@@ -12,13 +12,7 @@ define :agroup, :gid => nil, :sudo => false do
   end
 
   if params[:sudo]
-    unless node[:accounts].has_key?(:sudo)
-      node[:accounts][:sudo] = Mash.new
-    end
-    unless node[:accounts][:sudo].has_key?(:groups)
-       node[:accounts][:sudo][:groups] = Array.new
-    end
-    node[:accounts][:sudo][:groups] |= [params[:name]]
+    node.set[:accounts][:sudo][:groups] |= [params[:name]]
   end
 
 end

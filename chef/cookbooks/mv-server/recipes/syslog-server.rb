@@ -8,7 +8,7 @@
 include_recipe "mv-server::default"
 
 # syslog-ng
-node[:syslog_ng][:source] = "syslog-ng/syslog-ng_server.conf"
+node.set[:syslog_ng][:source] = "syslog-ng/syslog-ng_server.conf"
 include_recipe "mv-server::syslog"
 
 # support scripts

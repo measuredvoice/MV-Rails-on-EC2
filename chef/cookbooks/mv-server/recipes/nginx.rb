@@ -6,15 +6,15 @@ yum_repository "nginx" do
 end
 
 # setup install
-node[:nginx][:version] = "1.2.6"
+node.set[:nginx][:version] = "1.2.6"
 
-node['nginx']['user'] = "mv"
-node['nginx']['init_style'] = "init"
-node['nginx']['dir'] = "/etc/nginx"
-node['nginx']['log_dir'] = "/var/log/nginx"
-node['nginx']['worker_processes'] = 8
-node['nginx']['worker_connections'] = 4096
-node['nginx']['keepalive_timeout'] = 65
+node.set['nginx']['user'] = "mv"
+node.set['nginx']['init_style'] = "init"
+node.set['nginx']['dir'] = "/etc/nginx"
+node.set['nginx']['log_dir'] = "/var/log/nginx"
+node.set['nginx']['worker_processes'] = 8
+node.set['nginx']['worker_connections'] = 4096
+node.set['nginx']['keepalive_timeout'] = 65
 
 include_recipe "nginx"
 

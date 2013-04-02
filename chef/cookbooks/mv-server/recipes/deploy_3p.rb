@@ -6,7 +6,4 @@ branch_name = case node.chef_environment
 end
 
 # brnaches by hostname
-branch_name = case node.hostname
-   when "gen
-
 

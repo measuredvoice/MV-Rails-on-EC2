@@ -285,8 +285,11 @@ namespace :mvserver do
    desc "log rotation configuration "
    task :install_logrotate, :roles => :mvserver do
       upload("./etc/logrotate.d/unicorn_mv2app","/tmp/unicorn_mv2app.logrotate", :mode => 0644)
+      upload("./etc/logrotate.d/mv_delayed_job","/tmp/mv_delayed_job.logrotate", :mode => 0644)
       sudo "chown root.root /tmp/unicorn_mv2app.logrotate"
+      sudo "chown root.root /tmp/mv_delayed_job.logrotate"
       sudo "mv /tmp/unicorn_mv2app.logrotate /etc/logrotate.d/unicorn_mv2app"
+      sudo "mv /tmp/mv_delayed_job.logrotate /etc/logrotate.d/mv_delayed_job"
    end
 
    desc "install ntpdate cron"
@@ -475,8 +478,11 @@ namespace :threepserver do
    desc "log rotation configuration "
    task :install_logrotate, :roles => :threepserver do
       upload("./etc/logrotate.d/unicorn_3p","/tmp/unicorn_3p.logrotate", :mode => 0644)
+      upload("./etc/logrotate.d/3p_delayed_job","/tmp/3p_delayed_job.logrotate", :mode => 0644)
       sudo "chown root.root /tmp/unicorn_3p.logrotate"
+      sudo "chown root.root /tmp/3p_delayed_job.logrotate"
       sudo "mv /tmp/unicorn_3p.logrotate /etc/logrotate.d/unicorn_3p"
+      sudo "mv /tmp/3p_delayed_job.logrotate /etc/logrotate.d/3p_delayed_job"
    end
 
    desc "install ntpdate cron"

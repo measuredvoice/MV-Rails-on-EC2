@@ -1,9 +1,10 @@
+name             "accounts"
 maintainer       "Sander van Zoest"
 maintainer_email "sander@vanzoest.com"
 license          "Apache 2.0"
 description      "System Accounts management"
 long_description IO.read(File.join(File.dirname(__FILE__), 'README.rdoc'))
-version          "0.1"
+version          "0.1.3"
 replaces         "sudo"
 conflicts        "sudo"
 %w{redhat centos debian ubuntu}.each do |os|

@@ -96,7 +96,7 @@ execute "disable default vhost" do
   only_if { ::File.exists?("/etc/nginx/sites-enabled/.default_disabled") } 
 end
 
-# logrotation script for unicorn
+# logrotation scripts
 cookbook_file "/etc/logrotate.d/unicorn_mv2app" do
    source "logrotate.d/unicorn_mv2app"
    owner "root"
@@ -104,6 +104,12 @@ cookbook_file "/etc/logrotate.d/unicorn_mv2app" do
    mode 00640
 end
 
+cookbook_file "/etc/logrotate.d/mv_delayed_job" do
+   source "logrotate.d/mv_delayed_job"
+   owner "root"
+   group "root"
+   mode 00640
+end
 
 # if running chef solo then assume dev and install
 # percona server

@@ -22,7 +22,7 @@ multistage = case branch_name
 end
 
 # create directories if they do not exist
-for dir in [ "#{apphome}",
+for dir in [  apphome,
              "#{apphome}/cap",
              "#{apphome}/cap/releases",
              "#{apphome}/cap/shared",
@@ -33,7 +33,7 @@ for dir in [ "#{apphome}",
              "#{apphome}/cap/shared/log",
              "#{apphome}/cap/shared/pids",
 ] do
-   directory "#{dir}" do
+   directory dir do
       mode "0775"
       owner "mv"
       group "users"

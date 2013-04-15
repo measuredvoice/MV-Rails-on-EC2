@@ -26,7 +26,7 @@ for pkg in [ 'libxml2',
              'crontabs',
              'ntpdate'
 ] do
-   package "#{pkg}" do
+   package pkg do
       action :install
    end
 end

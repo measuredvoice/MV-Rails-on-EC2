@@ -104,7 +104,7 @@ if Chef::Config[:solo]
              "/etc/mysql",
              "/etc/mysql/conf.d",
    ] do
-      directory "#{dir}" do
+      directory dir do
          mode "0775"
          owner "mysql"
          group "mysql"

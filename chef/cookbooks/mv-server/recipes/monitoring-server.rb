@@ -18,14 +18,14 @@ include_recipe "apache2"
 
 # install nagios plugins
 for pkg in [ 'nagios-plugins.x86_64', 'nagios-plugins-all.x86_64', 'nagios-plugins-nrpe' ] do
-   package "#{pkg}" do
+   package pkg do
       action :install
    end
 end
 
 # install icinga
 for pkg in [ 'icinga.x86_64 icinga-idoutils.x86_64 icinga-gui.x86_64 icinga-doc.x86_64 icinga-api.x86_64' ] do
-   package "#{pkg}" do
+   package pkg do
       action :install
    end
 end

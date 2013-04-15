@@ -4,8 +4,9 @@ cookbook_file "/root/ruby-1.9.3p327-1.el6.x86_64.rpm" do
   action :create_if_missing
 end
 
-package "ruby-1.9.3" do
+rpm_package "ruby-1.9.3" do
   action :install
+  version "1.9.3p327"
   source "/root/ruby-1.9.3p327-1.el6.x86_64.rpm"
 end
 

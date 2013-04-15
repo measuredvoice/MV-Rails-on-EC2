@@ -80,17 +80,20 @@ end
 execute "enable mv2app vhost" do
   command "/usr/sbin/nxensite mv2app_vhost.conf"
   action :run
+  not_if { ::File.exists?("/etc/nginx/sites-enabled/mv2app_vhost.conf") } 
 end
 
 execute "remove default.conf if it exists" do
   command "mv -f /etc/nginx/conf.d/default.conf /etc/nginx/conf.d/default.conf.orig || true"
   action :run
+  only_if { ::File.exists?("/etc/nginx/conf.d/default.conf") } 
 end
 
 execute "disable default vhost" do
   command "/usr/sbin/nxdissite default"
   creates "/etc/nginx/sites-enabled/.default_disabled"
   action :run
+  only_if { ::File.exists?("/etc/nginx/sites-enabled/.default_disabled") } 
 end
 
 # logrotation script for unicorn
@@ -170,4 +173,7 @@ if Chef::Config[:solo]
 #     action :create
 #   end
 end
+
+# install chef-client
+include_recipe "mv-server::chef-client"
 

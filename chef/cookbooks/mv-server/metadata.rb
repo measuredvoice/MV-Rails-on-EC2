@@ -15,4 +15,5 @@ depends "nodejs"
 depends "accounts"
 depends 'nagios'
 depends 'database'
+depends 'chef-client'
 

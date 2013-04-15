@@ -43,7 +43,7 @@ for dir in [ "#{apphome}",
 end
 
 # Define deploy tasks
-deploy "#{apphome}/cap" do
+deploy_revision "#{apphome}/cap" do
    repo "git@github.com:measuredvoice/measured_voice.git"
    revision branch_name
    create_dirs_before_symlink

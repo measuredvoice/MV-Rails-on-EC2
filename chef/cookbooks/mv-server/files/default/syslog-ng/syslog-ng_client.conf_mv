@@ -34,7 +34,7 @@ source s_nginx {
    file ("/var/log/nginx/error.log", program_override("app/nginxerr: "));
 };
 
-filter f_nginx   { program("app/nginx") and not match(" \"-\" 400 0 "); };
+filter f_nginx   { program("app/nginx") and not match("regex" value(" \"-\" 400 0 ")); };
 filter f_xnginx  { not program("app/nginx*"); }; 
 
 log { 
@@ -50,9 +50,10 @@ source s_unicorn {
    file ("/home/mv/mv2app/cap/shared/log/unicorn.stderr.log", program_override("app/unicornerr-mv: "));
    file ("/home/mv/mv2app/cap/shared/log/production.log", program_override("app/unicornprod-mv: "));
    file ("/home/mv/mv2app/cap/shared/log/delayed_job.log", program_override("app/unicorndelayed-mv: "));
+   file ("/home/mv/mv2app/cap/shared/log/newrelic_agent.log", program_override("app/unicornnewrelic-mv: "));
 };
 
-filter f_unicorn  { program("app/unicorn*") and not match(" \"-\" 400 0 "); };
+filter f_unicorn  { program("app/unicorn*") and not match("regex" value(" \"-\" 400 0 ")); };
 filter f_xunicorn  { not program("app/unicorn*"); }; 
 
 log { 

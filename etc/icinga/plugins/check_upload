@@ -1,0 +1,96 @@
+#!/usr/bin/perl
+
+use POSIX;
+use Getopt::Long;
+use vars qw($opt_V $opt_H $opt_v );
+use lib  "/usr/lib64/nagios/plugins";
+use utils qw(%ERRORS &print_revision &support &usage );
+
+use HTTP::Cookies;
+use WWW::Mechanize;
+use warnings;
+use strict;
+
+use Getopt::Long;
+GetOptions(
+   "H=s" => \$opt_H,   "hostname=s" => \$opt_H,
+);
+
+my $urlroot = "https://$opt_H" ;
+my $username = 'monitor@measuredvoice.com' ;
+my $password="giant dragons obviously can't fly" ;
+my $filename = "photo-example-gorilla4-large.jpg";
+my $filepath = "/var/icinga/$filename";
+my $cookie_file = "/tmp/cookie_jar.$$" ;
+
+my $cookie_jar = HTTP::Cookies->new(
+   file     => $cookie_file,
+   ignore_discard => 1,
+   autosave => 1, 
+);
+
+# set up connection
+my $mech = WWW::Mechanize->new();
+$mech->cookie_jar( $cookie_jar );
+
+# login
+my $url = "$urlroot/login";
+
+$mech->get($url);
+#$mech->form_id('new_person');
+$mech->field("person[email]", $username);
+$mech->field("person[password]", $password);
+$mech->click;
+
+die unless ($mech->success);
+
+# upload the file
+$url = "$urlroot/channels/1/photos";
+my $field_name = "photo[photo_file][]";
+
+my $file = [ 
+    $filepath,         # The file you'd like to upload.
+    $filename,         # The filename you'd like to give the web server.
+    'Content-type' => 'form/data' # Any other flags you'd like to add go here.
+];
+ 
+$mech = WWW::Mechanize->new();
+#$mech->add_handler("response_done", sub { shift->dump; return });
+$mech->cookie_jar( $cookie_jar );
+$mech->post($url, [
+    $field_name => $file
+]);
+
+my $status = $mech->status ;
+
+# tidy up (undefs to release filehandle
+# before deleting file)
+undef $mech;
+undef $cookie_jar;
+unlink $cookie_file ;
+
+# work out state for nagios
+my ($state, $message) ;
+if ( $status == 200 )
+{
+   $state = 'OK' ;
+   $message = '200 Image Upload Successful' ;
+}
+elsif ( $status > 399 && $status < 500 )
+{
+    $state = 'CRITICAL' ;
+    $message = "$status Error : data or authentication problem" ;
+}
+elsif ( $status == 500 )
+{
+    $state = 'CRITICAL' ;
+    $message = '500 Error : Failed to upload image' ;
+}
+else {
+    $state = 'WARNING' ;
+    $message = "$status Error : Image upload status unknown" ;
+}
+
+# print message and exit with correct value
+print "$state: $message\n" ;
+exit $ERRORS{$state};

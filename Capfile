@@ -1012,6 +1012,13 @@ namespace :mvmonitor do
       sudo "rm -rf /tmp/icinga_config"
    end
 
+   desc "install photo upload check file"
+   task :install_photo_upload_file, :roles => :mvmonitor do
+      upload("./var/icinga/photo-example-gorilla4-large.jpg","/tmp/photo-example-gorilla4-large.jpg", :mode => 0644)
+      sudo "mv /tmp/photo-example-gorilla4-large.jpg /var/icinga/photo-example-gorilla4-large.jpg" 
+      sudo "chown icinga.icinga /var/icinga/photo-example-gorilla4-large.jpg"
+   end
+
    desc "install ntpdate cron"
    task :install_ntpdate_cron, :roles => :mv2app do
       upload("./crontabs/ntpdate_root","/tmp/ntpdate_root", :mode => 0644)
@@ -1020,7 +1027,7 @@ namespace :mvmonitor do
    end
 
    #################################################################
-   # mv syslog install all packages
+   # mv monitor install all packages
    desc "all tasks to create a mv monitoring server"
    task :install, :roles => :mvmonitor  do
       install_epelrepo 
@@ -1035,6 +1042,7 @@ namespace :mvmonitor do
       install_nagios_plugins
       install_icinga
       update_icinga_users
+      install_photo_upload_file
       #update_icinga_config
    end
 end

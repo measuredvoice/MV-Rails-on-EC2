@@ -16,6 +16,11 @@ GetOptions(
    "H=s" => \$opt_H,   "hostname=s" => \$opt_H,
 );
 
+unless ($opt_H) {
+  print "USAGE: $0 --hostname 'prime.measuredvoice.com'\n";
+  exit;
+}
+
 my $urlroot = "https://$opt_H" ;
 my $username = 'monitor@measuredvoice.com' ;
 my $password="giant dragons obviously can't fly" ;
@@ -42,7 +47,13 @@ $mech->field("person[email]", $username);
 $mech->field("person[password]", $password);
 $mech->click;
 
-die unless ($mech->success);
+# The page result should include the channel name
+unless ($mech->content() =~ /Gorilla Greetings/) {
+  print "RESPONSE:\n";
+  print $mech->content();
+  print "\n";
+  die "AUTH ERROR: Didn't sign in to the channel as expected.\n";
+}
 
 # upload the file
 $url = "$urlroot/channels/1/photos";
@@ -50,8 +61,6 @@ my $field_name = "photo[photo_file][]";
 
 my $file = [ 
     $filepath,         # The file you'd like to upload.
-    $filename,         # The filename you'd like to give the web server.
-    'Content-type' => 'form/data' # Any other flags you'd like to add go here.
 ];
  
 $mech = WWW::Mechanize->new();
@@ -59,7 +68,7 @@ $mech = WWW::Mechanize->new();
 $mech->cookie_jar( $cookie_jar );
 $mech->post($url, [
     $field_name => $file
-]);
+], 'Content-type' => 'form-data');
 
 my $status = $mech->status ;
 

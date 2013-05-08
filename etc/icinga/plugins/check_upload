@@ -24,7 +24,7 @@ unless ($opt_H) {
 my $urlroot = "https://$opt_H" ;
 my $username = 'monitor@measuredvoice.com' ;
 my $password="giant dragons obviously can't fly" ;
-my $filename = "photo-example-gorilla4-large.jpg";
+my $filename = "photo-example-gorilla4-large.png";
 my $filepath = "/var/icinga/$filename";
 my $cookie_file = "/tmp/cookie_jar.$$" ;
 
@@ -57,7 +57,7 @@ unless ($mech->content() =~ /Gorilla Greetings/) {
 
 # upload the file
 $url = "$urlroot/channels/1/photos";
-my $field_name = "photo[photo_file][]";
+my $field_name = "photo[photo_file]";
 
 my $file = [ 
     $filepath,         # The file you'd like to upload.

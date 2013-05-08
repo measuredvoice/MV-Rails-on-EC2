@@ -1014,9 +1014,9 @@ namespace :mvmonitor do
 
    desc "install photo upload check file"
    task :install_photo_upload_file, :roles => :mvmonitor do
-      upload("./var/icinga/photo-example-gorilla4-large.jpg","/tmp/photo-example-gorilla4-large.jpg", :mode => 0644)
-      sudo "mv /tmp/photo-example-gorilla4-large.jpg /var/icinga/photo-example-gorilla4-large.jpg" 
-      sudo "chown icinga.icinga /var/icinga/photo-example-gorilla4-large.jpg"
+      upload("./var/icinga/photo-example-gorilla4-large.png","/tmp/photo-example-gorilla4-large.png", :mode => 0644)
+      sudo "mv /tmp/photo-example-gorilla4-large.png /var/icinga/photo-example-gorilla4-large.png" 
+      sudo "chown icinga.icinga /var/icinga/photo-example-gorilla4-large.png"
    end
 
    desc "install ntpdate cron"

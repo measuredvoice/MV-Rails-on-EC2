@@ -1,4 +1,4 @@
-/home/mv/mv2app/cap/shared/log/unicorn*.log /home/mv/mv2app/cap/shared/log/production.log /home/mv/mv2app/cap/shared/log/newrelic_agent.log {
+/home/mv/mv2app/cap/shared/log/*.log {
    daily
    missingok
    rotate 30

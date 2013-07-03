@@ -337,7 +337,7 @@ namespace :threepserver do
 
    desc "install epel repo"
    task :install_epelrepo, :roles => :threepserver do
-      sudo "rpm -Uvh http://download.fedoraproject.org/pub/epel/6/i386/epel-release-6-7.noarch.rpm ; true"
+      sudo "rpm -Uvh http://download.fedoraproject.org/pub/epel/6/i386/epel-release-6-8.noarch.rpm ; true"
    end
 
    desc "update all rpms"

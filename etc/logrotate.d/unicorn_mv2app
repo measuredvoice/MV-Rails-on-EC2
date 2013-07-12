@@ -14,5 +14,6 @@
    # as our "lastaction" action:
    lastaction
       /etc/init.d/unicorn_mv2app reload
+      /bin/su - mv -c '/bin/bash -l -c "RAILS_ENV=production /home/mv/mv2app/cap/current/script/delayed_job_queues restart"' >/dev/null 2>&1
    endscript
 }

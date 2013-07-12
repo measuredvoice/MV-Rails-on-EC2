@@ -1,0 +1,103 @@
+#!/usr/bin/env ruby
+
+require 'socket'
+
+# AWS API Credentials
+AWS_ACCESS_KEY_ID     = "#{ENV['AWS_ACCESS_KEY_ID']}"
+AWS_SECRET_ACCESS_KEY = "#{ENV['AWS_SECRET_ACCESS_KEY']}"
+AWS_SSH_KEY_ID_FILE = "#{ENV['AWS_SSH_KEY_ID_FILE']}"
+
+# Node details
+NODE_NAME         = "mv2app_webonly-01"
+REGION            = "us-east-1"
+CHEF_ENVIRONMENT  = "ec2-#{REGION}"
+INSTANCE_SIZE     = "m1.small"
+AMI_NAME          = "ami-57db6e3e" 
+SECURITY_GROUP    = "default"
+RUN_LIST          = "role[mv2app-webonly]"
+USER_DATA_FILE    = "/tmp/userdata.txt"
+USERNAME = ENV['USER']
+
+# Define the command to provision the instance
+provision_cmd = [
+  "knife ec2 server create",
+  "--aws-access-key-id #{AWS_ACCESS_KEY_ID}",
+  "--aws-secret-access-key #{AWS_SECRET_ACCESS_KEY}",
+  "--tags 'Name=#{NODE_NAME}'",
+  "--environment '#{CHEF_ENVIRONMENT}'",
+  "--flavor #{INSTANCE_SIZE}",
+  "--region #{REGION}",
+  "--image #{AMI_NAME}",
+  "--groups '#{SECURITY_GROUP}'",
+  "--user-data #{USER_DATA_FILE}",
+  "--verbose"
+].join(" ")
+
+
+puts "Running provision command...."
+puts
+ip_addr = nil
+instance_id = nil
+IO.popen(provision_cmd) do |pipe|
+  begin
+    while line = pipe.readline
+      puts line
+      if line =~ /^Instance ID: (.*)$/
+        instance_id = $1.strip
+      end
+      if line =~ /^Public IP Address: (.*)$/
+        ip_addr = $1.strip
+        Process.kill("TERM", pipe.pid)
+        break
+      end
+    end
+  rescue EOFError
+    # done
+  end
+end
+if ip_addr.nil?
+  puts "ERROR: Unable to get new instance's IP address"
+  exit -1
+end
+if instance_id.nil?
+  puts "ERROR: Unable to get new instance id"
+  exit -1
+end
+
+puts "Finished running provision command on #{instance_id} (#{ip_addr})...."
+
+# Now the new instance is provisioned, but we have no idea when it will
+# be ready to go. The first thing we'll do is wait until the SSH port
+# responds to connections.
+puts "Waiting for SSH to be available..."
+start_time = Time.now
+begin
+  s = TCPSocket.new ip_addr, 22
+rescue Errno::ETIMEDOUT => e
+  puts "Still waiting..."
+  retry
+end
+s.close
+
+sleep 30
+
+puts "SSH is now available..."
+
+# Define the command to bootstrap the already-provisioned instance with Chef
+puts "Running bootstrap command..."
+bootstrap_cmd = [
+  "knife bootstrap #{ip_addr}",
+  "-x #{USERNAME}",
+  "-i #{AWS_SSH_KEY_ID_FILE}",
+  "--node-name #{NODE_NAME}",
+  "--run-list #{RUN_LIST}",
+  "--environment #{CHEF_ENVIRONMENT}",
+  "--verbose"
+].join(' ')
+
+#puts "  #{bootstrap_cmd}"
+# Now we can bootstrap the instance with Chef and the configured run list.
+status = system(bootstrap_cmd) ? 0 : -1
+exit status
+
+
